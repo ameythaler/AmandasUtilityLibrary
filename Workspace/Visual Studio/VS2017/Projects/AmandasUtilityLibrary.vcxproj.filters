@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{b76793bd-07cb-442f-b18a-8bca0b9d9c6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private">
+      <UniqueIdentifier>{db5bfa9e-9b42-4704-92ac-f8b3832098fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Headers">
+      <UniqueIdentifier>{654dc223-e984-4c49-b81a-c8d5317fe619}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Source">
+      <UniqueIdentifier>{6ceb0063-27b0-423b-83ef-fbb1348ec660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Headers">
+      <UniqueIdentifier>{ced13dce-db0b-4ced-8858-0b6859cf6e25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Source">
+      <UniqueIdentifier>{ae0ef85d-2714-4b49-8b8d-5d2d0b261359}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Headers\Utility">
+      <UniqueIdentifier>{e9cd211f-a0d7-4717-8b9f-91ef7e4471da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Headers\Types">
+      <UniqueIdentifier>{d50ec1c8-629f-4168-ada2-0bcf12f6b137}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Source\Types">
+      <UniqueIdentifier>{3b482cb9-f06f-4923-b554-c38aa28889fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Source\Utility">
+      <UniqueIdentifier>{dd47b622-fc0e-4305-a37b-636b3ba55bae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Headers\Memory">
+      <UniqueIdentifier>{d691698c-6bbf-46e3-8a77-7474722e404c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Headers\Memory\Impl">
+      <UniqueIdentifier>{bfdb162a-a9ec-4ad2-af85-eeca253e785b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Source\Memory">
+      <UniqueIdentifier>{24af3006-0764-4988-bee2-8ab06ff6fa79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Headers\Threading">
+      <UniqueIdentifier>{a233ef70-c62b-44cd-a084-3952fb3ce0e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Source\Threading">
+      <UniqueIdentifier>{a266fef4-8f34-40f1-ab89-e3b0774b69a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public\Headers\Networking">
+      <UniqueIdentifier>{165978b4-11b9-43ab-bf47-abed52ecae77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Source\Networking">
+      <UniqueIdentifier>{954dd7b0-01ea-4c9d-b606-1dabd1ed9cd6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Private\stdafx.h">
+      <Filter>Private\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\memstack.h">
+      <Filter>Public\Headers\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\date_time.h">
+      <Filter>Public\Headers\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\hash.h">
+      <Filter>Public\Headers\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\macros.h">
+      <Filter>Public\Headers\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\timer.h">
+      <Filter>Public\Headers\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\string.h">
+      <Filter>Public\Headers\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\types.h">
+      <Filter>Public\Headers\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\memstack.hpp">
+      <Filter>Public\Headers\Memory\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\lockable.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\synchronizer.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\thread.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\rw_mutex.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\mutex.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\rw_recursive_mutex.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\recursive_mutex.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\scope_lock.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\connection.h">
+      <Filter>Public\Headers\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector.h">
+      <Filter>Public\Headers\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\exception.h">
+      <Filter>Public\Headers\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\config.h">
+      <Filter>Public\Headers\Memory\Impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\platform.h">
+      <Filter>Public\Headers\Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\stdafx.cpp">
+      <Filter>Private\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\types.cpp">
+      <Filter>Private\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\string.cpp">
+      <Filter>Private\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp">
+      <Filter>Private\Source\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\timer.cpp">
+      <Filter>Private\Source\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\memstack.cpp">
+      <Filter>Private\Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\synchronizer.cpp">
+      <Filter>Private\Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\thread.cpp">
+      <Filter>Private\Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\rw_mutex.cpp">
+      <Filter>Private\Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\mutex.cpp">
+      <Filter>Private\Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\rw_recursive_mutex.cpp">
+      <Filter>Private\Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\recursive_mutex.cpp">
+      <Filter>Private\Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\connection.cpp">
+      <Filter>Private\Source\Networking</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\..\AmandasUtilityLibrary\ReadMe.txt" />
+  </ItemGroup>
+</Project>

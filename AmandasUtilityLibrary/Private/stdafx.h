@@ -5,10 +5,12 @@
 
 #pragma once
 
-#include "targetver.h"
+#include <memory>
+#include <functional>
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-
-
+#include "aul/impl/config.h"
+#include "aul/platform.h"
+#include "aul/macros.h"
+#include "aul/types.h"
 
 // TODO: reference additional headers your program requires here
