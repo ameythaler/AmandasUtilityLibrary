@@ -247,6 +247,16 @@ namespace aul
         return connection_error(connection_error_type::NONE);
     }
 
+    connection_error connection::select(int32& num_ready, connection_status& status)
+    {
+        timeval wait_time = { 0, 0 };
+        int result = ::select(status._max_sock + 1, &status._status, nullptr, nullptr, &wait_time);
+        if (result < 0) return connection_error(connection_error_type::SELECT_RETURNED_ERROR, AUL_NETERR);
+
+        num_ready = result;
+        return connection_error(connection_error_type::NONE);
+    }
+
     connection_error connection::bind()
     {
 #if __AUL_SAFETY_CHECK
@@ -399,6 +409,29 @@ namespace aul
         return connection_error(connection_error_type::NONE);
     }
 
+    bool connection::is_ready_to_read()
+    {
+#if __AUL_SAFETY_CHECK
+        __WINSOCK_SAFETY_CHECK();
+#endif // __AUL_SAFETY_CHECK
+        fd_set readset;
+        FD_ZERO(&readset);
+        FD_SET(_socket, &readset);
+        timeval wait_time = { 0, 0 };
+        int result = ::select((int32)_socket + 1, &readset, nullptr, nullptr, &wait_time);
+        return result > 0;
+    }
+
+    bool connection::is_ready_to_read(const connection_status& status) const
+    {
+        return status.is_sock_set(_socket);
+    }
+
+    void connection::initialize_status(connection_status& status) const
+    {
+        status.set_sock(_socket);
+    }
+
     connection_error connection::handle_txrx_error(int32 err)
     {
         switch (get_net_error_mode(err))
@@ -415,6 +448,23 @@ namespace aul
             _socket_state = _state::DISCONNECTED;
             return connection_error(connection_error_type::SEND_RETURNED_ERROR, err);
         }
+    }
+
+    connection_status::connection_status()
+        : _max_sock(0)
+    {
+        FD_ZERO(&_status);
+    }
+
+    void connection_status::set_sock(SOCKET sock)
+    {
+        FD_SET(sock, &_status);
+        _max_sock = (_max_sock > (int32)sock) ? _max_sock : (int32)sock;
+    }
+
+    bool connection_status::is_sock_set(SOCKET sock) const
+    {
+        return FD_ISSET(sock, &_status);
     }
 }
 

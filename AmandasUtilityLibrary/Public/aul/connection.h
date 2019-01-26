@@ -54,7 +54,8 @@ namespace aul
         NO_ADDRESS_SPECIFIED_ON_CLIENT_INITIALIZATION,
         CONNECT_RETURNED_ERROR,
         SEND_RETURNED_ERROR,
-        CLOSE_RETURNED_ERROR
+        CLOSE_RETURNED_ERROR,
+        SELECT_RETURNED_ERROR
     };
 
     struct connection_error 
@@ -68,6 +69,18 @@ namespace aul
         { }
     };
 
+    struct connection_status
+    {
+        connection_status();
+
+    private:
+        FD_SET _status;
+        int32 _max_sock;
+        void set_sock(SOCKET sock);
+        bool is_sock_set(SOCKET sock) const;
+        friend class connection;
+    };
+
     class connection
     {
     public:
@@ -75,6 +88,7 @@ namespace aul
         static connection_error initialize_server(connection& new_connection, connection_family family, connection_protocol protocol, const char* port, const char* local_address = nullptr);
         static connection_error initialize_client(connection& new_connection, connection_family family, connection_protocol protocol, const char* port, const char* address);
         static std::vector<mb_string> get_local_addresses(connection_family family, const char* port = "789");
+        connection_error select(int32& num_ready, connection_status& status);
         connection_error bind();
         connection_error listen(int32 max_pending = SOMAXCONN);
         connection_error accept(connection& new_connection);
@@ -83,6 +97,9 @@ namespace aul
         connection_error recv(byte* buffer, int32& buffer_size);
         connection_error close();
         bool is_initialized() const { return _is_bound; }
+        bool is_ready_to_read();
+        bool is_ready_to_read(const connection_status& status) const;
+        void initialize_status(connection_status& status) const;
 
     private:
         enum class _state : uint8
