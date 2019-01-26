@@ -124,6 +124,9 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\platform.h">
       <Filter>Public\Headers\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\process.h">
+      <Filter>Public\Headers\Threading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\stdafx.cpp">
@@ -164,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\connection.cpp">
       <Filter>Private\Source\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\process.cpp">
+      <Filter>Private\Source\Threading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
