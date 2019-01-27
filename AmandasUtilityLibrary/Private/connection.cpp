@@ -284,8 +284,6 @@ namespace aul
             AUL_THROW("Connection not in a listen-able state.");
         }
 #endif // __AUL_SAFETY_CHECK
-        if (!_is_bound) return connection_error(connection_error_type::LISTEN_CALLED_ON_UNBOUND_SOCKET, -1);
-
         int result = ::listen(_socket, max_pending);
         if (result < 0) return connection_error(connection_error_type::LISTEN_RETURNED_ERROR, result);
 
@@ -305,7 +303,7 @@ namespace aul
         sockaddr addr;
         int addrlen = (int)sizeof(addr);
         int32 result = (int32)::accept(_socket, &addr, &addrlen);
-        if (result != 0)
+        if (result < 0)
         {
             return connection_error(connection_error_type::ACCEPT_RETURNED_ERROR, AUL_NETERR);
         }
