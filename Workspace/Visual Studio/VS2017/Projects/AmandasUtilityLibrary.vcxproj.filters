@@ -56,6 +56,12 @@
     <Filter Include="Private\Source\Networking">
       <UniqueIdentifier>{954dd7b0-01ea-4c9d-b606-1dabd1ed9cd6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Public\Headers\Math">
+      <UniqueIdentifier>{4bb92c40-5bca-4a88-8f10-780f7e4efc86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Source\Math">
+      <UniqueIdentifier>{0e43f890-fe2e-4622-b01e-3bdbdfe153a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Private\stdafx.h">
@@ -127,6 +133,9 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\process.h">
       <Filter>Public\Headers\Threading</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\math.h">
+      <Filter>Public\Headers\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\stdafx.cpp">
@@ -170,6 +179,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\process.cpp">
       <Filter>Private\Source\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\math.cpp">
+      <Filter>Private\Source\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

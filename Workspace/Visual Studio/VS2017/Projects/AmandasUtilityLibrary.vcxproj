@@ -27,6 +27,7 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\memstack.hpp" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\lockable.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\macros.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\memstack.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\platform.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\process.h" />
@@ -45,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp" />
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\math.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\memstack.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\process.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\recursive_mutex.cpp" />
