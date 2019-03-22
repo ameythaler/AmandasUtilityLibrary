@@ -51,20 +51,4 @@ namespace aul
     typedef int64_t int64;
 
     typedef uint32 thread_id;
-
-    // #TODO Delete this if unnecessary
-    struct local_char_ptr
-    {
-        char* _ptr;
-
-        local_char_ptr() : _ptr(nullptr) { }
-        local_char_ptr(unsigned int size) { _ptr = new char[size]; }
-        local_char_ptr(const aul_string& str);
-        ~local_char_ptr() { delete[] _ptr; }
-        operator char*() { return _ptr; }
-        char** operator&() { return &_ptr; }
-        char operator*() { return *_ptr; }
-        char operator[](unsigned int index) { return _ptr[index]; }
-        operator aul_string() const;
-    };
 }
