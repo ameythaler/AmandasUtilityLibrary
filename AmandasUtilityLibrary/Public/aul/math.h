@@ -109,6 +109,8 @@ inline double x(double val) { return y(val); }
         static const T PI_OVER_2;
         static const T PI_OVER_4;
         static const T MAX;
+        static const T DEG_TO_RAD;
+        static const T RAD_TO_DEG;
         static bool equal(T lhs, T rhs);
         static bool not_equal(T lhs, T rhs);
     };
@@ -139,6 +141,8 @@ struct scalar<T> \
     static const T PI_OVER_2; \
     static const T PI_OVER_4; \
     static const T MAX; \
+    static const T DEG_TO_RAD; \
+    static const T RAD_TO_DEG; \
     static bool equal(T lhs, T rhs); \
     static bool not_equal(T lhs, T rhs); \
 }; \
@@ -171,8 +175,8 @@ extern template struct scalar_int<T>
 #undef AUL_INTERNAL_EXPLICIT_DEC_SCALAR
 #undef AUL_INTERNAL_EXPLICIT_DEC_SCALAR_INT
 
-    inline float to_radians(float degrees) { return degrees * scalarf::PI / 180.0f; }
-    inline double to_radians(double degrees) { return degrees * scalard::PI / 180.0; }
-    inline float to_degrees(float radians) { return radians * 180.0f / scalarf::PI; }
-    inline double to_degrees(double radians) { return radians * 180.0 / scalard::PI; }
+    inline float to_radians(float degrees) { return degrees * scalarf::DEG_TO_RAD; }
+    inline double to_radians(double degrees) { return degrees * scalard::DEG_TO_RAD; }
+    inline float to_degrees(float radians) { return radians * scalarf::RAD_TO_DEG; }
+    inline double to_degrees(double radians) { return radians * scalard::RAD_TO_DEG; }
 }

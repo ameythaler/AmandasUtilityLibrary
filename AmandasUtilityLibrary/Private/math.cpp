@@ -5,7 +5,7 @@
 
 namespace aul
 {
-#define AUL_INTERNAL_EXPLICIT_DEF_SCALAR(T, zero, one, two, four) const T scalar<T>::ZERO = zero; \
+#define AUL_INTERNAL_EXPLICIT_DEF_SCALAR(T, zero, one, two, four, one_eighty) const T scalar<T>::ZERO = zero; \
     const T scalar<T>::ONE = one; \
     const T scalar<T>::TWO = two; \
     const T scalar<T>::FOUR = four; \
@@ -16,6 +16,8 @@ namespace aul
     const T scalar<T>::PI_OVER_2 = (T)M_PI / two; \
     const T scalar<T>::PI_OVER_4 = (T)M_PI / four; \
     const T scalar<T>::MAX = std::numeric_limits<T>::max(); \
+    const T scalar<T>::DEG_TO_RAD = (T)M_PI / one_eighty; \
+    const T scalar<T>::RAD_TO_DEG = one_eighty / (T)M_PI; \
     bool scalar<T>::equal(T lhs, T rhs) \
     { \
         return abs(lhs - rhs) <= EPSILON; \
@@ -41,8 +43,8 @@ namespace aul
     } \
     template struct scalar_int<T>
 
-    AUL_INTERNAL_EXPLICIT_DEF_SCALAR(float, 0.0f, 1.0f, 2.0f, 4.0f);
-    AUL_INTERNAL_EXPLICIT_DEF_SCALAR(double, 0.0, 1.0, 2.0, 4.0);
+    AUL_INTERNAL_EXPLICIT_DEF_SCALAR(float, 0.0f, 1.0f, 2.0f, 4.0f, 180.0f);
+    AUL_INTERNAL_EXPLICIT_DEF_SCALAR(double, 0.0, 1.0, 2.0, 4.0, 180.0);
     AUL_INTERNAL_EXPLICIT_DEF_SCALAR_INT(int32, 0, 1, 2, 4);
     AUL_INTERNAL_EXPLICIT_DEF_SCALAR_INT(uint32, 0u, 1u, 2u, 4u);
     AUL_INTERNAL_EXPLICIT_DEF_SCALAR_INT(int64, 0, 1, 2, 4);
