@@ -37,12 +37,14 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\scope_lock.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\mutex.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\connection.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\simd_math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\string.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\synchronizer.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\thread.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\timer.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\types.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp" />
@@ -65,6 +67,7 @@
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\thread.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\timer.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\types.cpp" />
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\AmandasUtilityLibrary\ReadMe.txt" />

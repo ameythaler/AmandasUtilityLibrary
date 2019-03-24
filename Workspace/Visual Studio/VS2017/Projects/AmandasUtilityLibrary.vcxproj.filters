@@ -124,9 +124,6 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\exception.h">
       <Filter>Public\Headers\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\config.h">
-      <Filter>Public\Headers\Memory\Impl</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\platform.h">
       <Filter>Public\Headers\Utility</Filter>
     </ClInclude>
@@ -134,6 +131,15 @@
       <Filter>Public\Headers\Threading</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\math.h">
+      <Filter>Public\Headers\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\simd_math.h">
+      <Filter>Public\Headers\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\config.h">
+      <Filter>Public\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector2.h">
       <Filter>Public\Headers\Math</Filter>
     </ClInclude>
   </ItemGroup>
@@ -181,6 +187,9 @@
       <Filter>Private\Source\Threading</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\math.cpp">
+      <Filter>Private\Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector2.cpp">
       <Filter>Private\Source\Math</Filter>
     </ClCompile>
   </ItemGroup>
