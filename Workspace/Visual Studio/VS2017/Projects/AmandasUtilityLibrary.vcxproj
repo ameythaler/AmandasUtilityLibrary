@@ -25,6 +25,7 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\hash.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\config.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\memstack.hpp" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\simd_math_types.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\lockable.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\macros.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\math.h" />
@@ -45,6 +46,7 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\types.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector2.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp" />
@@ -68,6 +70,7 @@
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\timer.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\types.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector2.cpp" />
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\AmandasUtilityLibrary\ReadMe.txt" />
@@ -77,32 +80,32 @@
     <ProjectGuid>{F141EA30-C545-420D-8493-5346954D1BDA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>AmandasUtilityLibrary</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

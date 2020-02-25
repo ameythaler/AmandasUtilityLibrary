@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "aul/vector2.h"
+#include <aul/vector2.h>
 
 namespace aul
 {

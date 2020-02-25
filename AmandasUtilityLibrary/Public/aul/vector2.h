@@ -1,7 +1,8 @@
 #pragma once
 
-#include "aul/math.h"
-#include "aul/macros.h"
+#include <aul/math.h>
+#include <aul/macros.h>
+#include <aul/impl/simd_math_types.h>
 
 // Disable the warning about negating unsigned values - that it doesn't do anything is expected behavior.
 // #TODO: Do the same for LLVM and GCC
@@ -34,7 +35,7 @@ namespace aul
     mb_ostream& operator<< (mb_ostream& out, const vector2_int<int8, float>& vec);
 
     template<typename T>
-    struct AUL_ALIGN(16) vector2
+    struct vector2
     {
         union
         {
@@ -90,7 +91,7 @@ namespace aul
     };
 
     template<typename T, typename U>
-    struct AUL_ALIGN(16) vector2_int
+    struct vector2_int
     {
         union
         {
@@ -159,6 +160,26 @@ extern template struct vector2_int<T, U>
 
 #undef AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC
 #undef AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC_INT
+
+    // SIMD set and get
+#if AUL_USE_SSE
+    inline vec4f vec4f_set(const vector2f& vec2)
+    {
+        return _mm_set_ps(0.0f, 0.0f, vec2.y, vec2.x);
+    }
+
+    inline vec4f vec4f_set(vector2f&& vec2)
+    {
+        return _mm_set_ps(0.0f, 0.0f, vec2.y, vec2.x);
+    }
+
+    inline vector2f vec4f_get_vector2f(vec4f vec)
+    {
+        float vec_array[4];
+        _mm_store_ps(vec_array, vec);
+        return vector2f(vec_array[3], vec_array[2]);
+    }
+#endif // AUL_USE_SSE
 }
 
 #if AUL_MSVC
