@@ -55,13 +55,6 @@ namespace aul
     }
 
     template<typename T>
-    vector2<T>& vector2<T>::operator =(const vector2& rhs)
-    {
-        memcpy(data, rhs.data, sizeof(T) * 2);
-        return *this;
-    }
-
-    template<typename T>
     vector2<T>& vector2<T>::operator =(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 2);
@@ -124,13 +117,6 @@ namespace aul
     vector2_int<T, U>::vector2_int(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 2);
-    }
-
-    template<typename T, typename U>
-    vector2_int<T, U>& vector2_int<T, U>::operator =(const vector2_int& rhs)
-    {
-        memcpy(data, rhs.data, sizeof(T) * 2);
-        return *this;
     }
 
     template<typename T, typename U>

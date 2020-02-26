@@ -1,8 +1,10 @@
 #pragma once
 
-#include <aul/math.h>
+#include <aul/scalar_math.h>
 #include <aul/macros.h>
 #include <aul/impl/simd_math_types.h>
+#include <aul/vector2.h>
+#include <aul/vector3.h>
 
 // Disable the warning about negating unsigned values - that it doesn't do anything is expected behavior.
 // #TODO: Do the same for LLVM and GCC
@@ -47,6 +49,8 @@ namespace aul
                 T z;
                 T w;
             };
+            vector2<T> xy;
+            vector3<T> xyz;
         };
 
         static const vector4 ZERO;
@@ -58,8 +62,11 @@ namespace aul
 
         vector4(T x_ = scalar<T>::ZERO, T y_ = scalar<T>::ZERO, T z_ = scalar<T>::ZERO, T w_ = scalar<T>::ZERO) : x(x_), y(y_), z(z_), w(w_) { }
         vector4(const T* arr_data);
-        vector4& operator=(const vector4& rhs);
+        vector4(const vector3<T>& rhs, T w_ = scalar<T>::ZERO);
+        vector4(const vector2<T>& rhs, T z_ = scalar<T>::ZERO, T w_ = scalar<T>::ZERO);
         vector4& operator=(const T* arr_data);
+        vector4& operator=(const vector3<T>& rhs);
+        vector4& operator=(const vector2<T>& rhs);
 
         inline bool operator==(const vector4& rhs) const { return scalar<T>::equal(x, rhs.x) && scalar<T>::equal(y, rhs.y) && scalar<T>::equal(z, rhs.z) && scalar<T>::equal(w, rhs.w); }
         inline bool operator!=(const vector4& rhs) const { return scalar<T>::not_equal(x, rhs.x) || scalar<T>::not_equal(y, rhs.y) || scalar<T>::not_equal(z, rhs.z) || scalar<T>::not_equal(w, rhs.w); }
@@ -107,6 +114,8 @@ namespace aul
                 T z;
                 T w;
             };
+            vector2_int<T, U> xy;
+            vector3_int<T, U> xyz;
         };
 
         static const vector4_int ZERO;
@@ -118,8 +127,11 @@ namespace aul
 
         vector4_int(T x_ = scalar_int<T>::ZERO, T y_ = scalar_int<T>::ZERO, T z_ = scalar_int<T>::ZERO, T w_ = scalar_int<T>::ZERO) : x(x_), y(y_), z(z_), w(w_) { }
         vector4_int(const T* arr_data);
-        vector4_int& operator=(const vector4_int& rhs);
+        vector4_int(const vector3_int<T, U>& rhs, T w_ = scalar_int<T>::ZERO);
+        vector4_int(const vector2_int<T, U>& rhs, T z_ = scalar_int<T>::ZERO, T w_ = scalar_int<T>::ZERO);
         vector4_int& operator=(const T* arr_data);
+        vector4_int& operator=(const vector3_int<T, U>& rhs);
+        vector4_int& operator=(const vector2_int<T, U>& rhs);
 
         inline bool operator==(const vector4_int& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
         inline bool operator!=(const vector4_int& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w; }
@@ -176,23 +188,9 @@ extern template struct vector4_int<T, U>
         return _mm_load_ps(vec4.data);
     }
 
-    inline vec4f vec4f_set(vector4f&& vec4)
-    {
-        return _mm_load_ps(vec4.data);
-    }
-
     inline vector4f vec4f_get_vector4f(vec4f vec)
     {
         vector4f ret;
-        _mm_store_ps(ret.data, vec);
-        return ret;
-    }
-
-    inline vector4f vec4f_get_vector3f_homogenous(vec4f vec)
-    {
-        vector4f ret;
-        vec4f w = AUL_INTERNAL_VEC4F_REPLICATE(vec, 3);
-        vec = _mm_div_ps(vec, w);
         _mm_store_ps(ret.data, vec);
         return ret;
     }

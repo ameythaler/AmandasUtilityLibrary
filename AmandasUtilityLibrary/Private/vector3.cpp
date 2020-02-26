@@ -61,16 +61,23 @@ namespace aul
     }
 
     template<typename T>
-    vector3<T>& vector3<T>::operator =(const vector3& rhs)
+    vector3<T>::vector3(const vector2<T>& rhs, T _z) : z(_z)
     {
-        memcpy(data, rhs.data, sizeof(T) * 3);
-        return *this;
+        memcpy(data, rhs.data, sizeof(T) * 2);
     }
 
     template<typename T>
     vector3<T>& vector3<T>::operator =(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 3);
+        return *this;
+    }
+
+    template<typename T>
+    vector3<T>& vector3<T>::operator =(const vector2<T>& rhs)
+    {
+        memcpy(data, rhs.data, 2);
+        z = scalar<T>::ZERO;
         return *this;
     }
 
@@ -139,16 +146,23 @@ namespace aul
     }
 
     template<typename T, typename U>
-    vector3_int<T, U>& vector3_int<T, U>::operator =(const vector3_int& rhs)
+    vector3_int<T, U>::vector3_int(const vector2_int<T, U>& rhs, T _z) : z(_z)
     {
-        memcpy(data, rhs.data, sizeof(T) * 3);
-        return *this;
+        memcpy(data, rhs.data, sizeof(T) * 2);
     }
 
     template<typename T, typename U>
     vector3_int<T, U>& vector3_int<T, U>::operator =(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 3);
+        return *this;
+    }
+
+    template<typename T, typename U>
+    vector3_int<T, U>& vector3_int<T, U>::operator =(const vector2_int<T, U>& rhs)
+    {
+        memcpy(data, rhs.data, sizeof(T) * 2);
+        z = scalar_int<T>::ZERO;
         return *this;
     }
 

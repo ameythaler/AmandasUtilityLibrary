@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include <aul/vector4.h>
+#include <aul/vector3.h>
+#include <aul/vector2.h>
 
 namespace aul
 {
@@ -67,16 +69,38 @@ namespace aul
     }
 
     template<typename T>
-    vector4<T>& vector4<T>::operator =(const vector4& rhs)
+    vector4<T>::vector4(const vector3<T>& rhs, T w_) : w(w_)
     {
-        memcpy(data, rhs.data, sizeof(T) * 4);
-        return *this;
+        memcpy(data, rhs.data, sizeof(T) * 3);
+    }
+
+    template<typename T>
+    vector4<T>::vector4(const vector2<T>& rhs, T z_, T w_) : z(z_), w(w_)
+    {
+        memcpy(data, rhs.data, sizeof(T) * 2);
     }
 
     template<typename T>
     vector4<T>& vector4<T>::operator =(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 4);
+        return *this;
+    }
+
+    template<typename T>
+    vector4<T>& vector4<T>::operator =(const vector3<T>& rhs)
+    {
+        memcpy(data, rhs.data, sizeof(T) * 3);
+        w = scalar<T>::ZERO;
+        return *this;
+    }
+
+    template<typename T>
+    vector4<T>& vector4<T>::operator =(const vector2<T>& rhs)
+    {
+        memcpy(data, rhs.data, sizeof(T) * 2);
+        z = scalar<T>::ZERO;
+        w = scalar<T>::ZERO;
         return *this;
     }
 
@@ -145,16 +169,38 @@ namespace aul
     }
 
     template<typename T, typename U>
-    vector4_int<T, U>& vector4_int<T, U>::operator =(const vector4_int& rhs)
+    vector4_int<T, U>::vector4_int(const vector3_int<T, U>& rhs, T w_) : w(w_)
     {
-        memcpy(data, rhs.data, sizeof(T) * 4);
-        return *this;
+        memcpy(data, rhs.data, sizeof(T) * 3);
+    }
+
+    template<typename T, typename U>
+    vector4_int<T, U>::vector4_int(const vector2_int<T, U>& rhs, T z_, T w_) : z(z_), w(w_)
+    {
+        memcpy(data, rhs.data, sizeof(T) * 2);
     }
 
     template<typename T, typename U>
     vector4_int<T, U>& vector4_int<T, U>::operator =(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 4);
+        return *this;
+    }
+
+    template<typename T, typename U>
+    vector4_int<T, U>& vector4_int<T, U>::operator =(const vector3_int<T, U>& rhs)
+    {
+        memcpy(data, rhs.data, sizeof(T) * 3);
+        w = scalar_int<T>::ZERO;
+        return *this;
+    }
+
+    template<typename T, typename U>
+    vector4_int<T, U>& vector4_int<T, U>::operator =(const vector2_int<T, U>& rhs)
+    {
+        memcpy(data, rhs.data, sizeof(T) * 2);
+        z = scalar_int<T>::ZERO;
+        w = scalar_int<T>::ZERO;
         return *this;
     }
 

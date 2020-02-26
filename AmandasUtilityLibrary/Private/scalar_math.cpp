@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #define _USE_MATH_DEFINES
-#include "aul/math.h"
+#include <aul/scalar_math.h>
 #include <limits.h>
 
 namespace aul

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <aul/math.h>
+#include <aul/scalar_math.h>
 #include <aul/macros.h>
 #include <aul/impl/simd_math_types.h>
 
@@ -54,7 +54,6 @@ namespace aul
 
         vector2(T x_ = scalar<T>::ZERO, T y_ = scalar<T>::ZERO) : x(x_), y(y_) { }
         vector2(const T* arr_data);
-        vector2& operator=(const vector2& rhs);
         vector2& operator=(const T* arr_data);
 
         inline bool operator==(const vector2& rhs) const { return scalar<T>::equal(x, rhs.x) && scalar<T>::equal(y, rhs.y); }
@@ -110,7 +109,6 @@ namespace aul
 
         vector2_int(T x_ = scalar_int<T>::ZERO, T y_ = scalar_int<T>::ZERO) : x(x_), y(y_) { }
         vector2_int(const T* arr_data);
-        vector2_int& operator=(const vector2_int& rhs);
         vector2_int& operator=(const T* arr_data);
 
         inline bool operator==(const vector2_int& rhs) const { return x == rhs.x && y == rhs.y; }
@@ -164,11 +162,6 @@ extern template struct vector2_int<T, U>
     // SIMD set and get
 #if AUL_USE_SSE
     inline vec4f vec4f_set(const vector2f& vec2)
-    {
-        return _mm_set_ps(0.0f, 0.0f, vec2.y, vec2.x);
-    }
-
-    inline vec4f vec4f_set(vector2f&& vec2)
     {
         return _mm_set_ps(0.0f, 0.0f, vec2.y, vec2.x);
     }
