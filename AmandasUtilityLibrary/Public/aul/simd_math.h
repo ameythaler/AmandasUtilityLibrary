@@ -25,18 +25,10 @@ namespace aul
     {
         return _mm_setzero_ps();
     }
-    
-    // vec must be arranged (w, z, y, x)
+
     inline vec4f vec4f_set(const float* vec)
     {
         return _mm_load_ps(vec);
-    }
-
-    inline vec4f vec4f_set_shuffled(const float* vec_array)
-    {
-        vec4f vec = _mm_load_ps(vec_array);
-        vec = _mm_shuffle_ps(vec, vec, AUL_INTERNAL_VEC4F_MASK(3, 2, 1, 0));
-        return vec;
     }
 
     inline float vec4f_get_x(vec4f vec)
@@ -70,16 +62,9 @@ namespace aul
         return retVal;
     }
 
-    // vec_array will be arranged (w, z, y, x)
     inline void vec4f_get(float* vec_array, vec4f vec)
     {
         _mm_store_ps(vec_array, vec);
-    }
-
-    inline void vec4f_get_shuffled(float* vec_array, vec4f vec)
-    {
-        vec4f vec_shuff = _mm_shuffle_ps(vec, vec, AUL_INTERNAL_VEC4F_MASK(3, 2, 1, 0));
-        _mm_store_ps(vec_array, vec_shuff);
     }
 
     inline vec4f vec4f_add(vec4f lhs, vec4f rhs)

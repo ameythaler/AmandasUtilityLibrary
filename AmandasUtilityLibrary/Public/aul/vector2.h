@@ -177,7 +177,7 @@ extern template struct vector2_int<T, U>
     {
         float vec_array[4];
         _mm_store_ps(vec_array, vec);
-        return vector2f(vec_array[3], vec_array[2]);
+        return vector2f(vec_array[0], vec_array[1]);
     }
 #endif // AUL_USE_SSE
 }

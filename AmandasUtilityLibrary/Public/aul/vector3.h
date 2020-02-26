@@ -177,11 +177,30 @@ extern template struct vector3_int<T, U>
         return _mm_set_ps(0.0f, vec3.z, vec3.y, vec3.x);
     }
 
+    inline vec4f vec4f_set_homogenous(const vector3f& vec3)
+    {
+        return _mm_set_ps(1.0f, vec3.z, vec3.y, vec3.x);
+    }
+
+    inline vec4f vec4f_set_homogenous(vector3f&& vec3)
+    {
+        return _mm_set_ps(1.0f, vec3.z, vec3.y, vec3.x);
+    }
+
     inline vector3f vec4f_get_vector3f(vec4f vec)
     {
         AUL_ALIGN(16) float vec_array[4];
         _mm_store_ps(vec_array, vec);
-        return vector3f(vec_array[3], vec_array[2], vec_array[1]);
+        return vector3f(vec_array[0], vec_array[1], vec_array[2]);
+    }
+
+    inline vector3f vec4f_get_vector3f_homogenous(vec4f vec)
+    {
+        AUL_ALIGN(16) float vec_array[4];
+        vec4f w = AUL_INTERNAL_VEC4F_REPLICATE(vec, 3);
+        vec = _mm_div_ps(vec, w);
+        _mm_store_ps(vec_array, vec);
+        return vector3f(vec_array[0], vec_array[1], vec_array[2]);
     }
 #endif // AUL_USE_SSE
 }

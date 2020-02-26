@@ -99,7 +99,7 @@ namespace aul
     {
         union
         {
-            T data[3];
+            T data[4];
             struct
             {
                 T x;
@@ -173,19 +173,28 @@ extern template struct vector4_int<T, U>
 #if AUL_USE_SSE
     inline vec4f vec4f_set(const vector4f& vec4)
     {
-        return _mm_set_ps(vec4.w, vec4.z, vec4.y, vec4.x);
+        return _mm_load_ps(vec4.data);
     }
 
     inline vec4f vec4f_set(vector4f&& vec4)
     {
-        return _mm_set_ps(vec4.w, vec4.z, vec4.y, vec4.x);
+        return _mm_load_ps(vec4.data);
     }
 
     inline vector4f vec4f_get_vector4f(vec4f vec)
     {
-        AUL_ALIGN(16) float vec_array[4];
-        _mm_store_ps(vec_array, vec);
-        return vector4f(vec_array[3], vec_array[2], vec_array[1], vec_array[0]);
+        vector4f ret;
+        _mm_store_ps(ret.data, vec);
+        return ret;
+    }
+
+    inline vector4f vec4f_get_vector3f_homogenous(vec4f vec)
+    {
+        vector4f ret;
+        vec4f w = AUL_INTERNAL_VEC4F_REPLICATE(vec, 3);
+        vec = _mm_div_ps(vec, w);
+        _mm_store_ps(ret.data, vec);
+        return ret;
     }
 #endif // AUL_USE_SSE
 }
