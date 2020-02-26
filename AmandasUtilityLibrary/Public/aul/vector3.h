@@ -64,6 +64,20 @@ namespace aul
         vector3& operator=(const T* arr_data);
         vector3& operator=(const vector2<T>& rhs);
 
+#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X, Y) vector3(const vector3_int<X, Y>& rhs) : x((T)rhs.x), y((T)rhs.y), z((T)rhs.z) { } \
+vector3& operator =(const vector3_int<X, Y>& rhs) { x = (T)rhs.x; y = (T)rhs.y; z = (T)rhs.z; return *this; }
+
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int32, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint32, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int64, double)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint64, double)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int16, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint16, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int8, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint8, float)
+
+#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
+
         inline bool operator==(const vector3& rhs) const { return scalar<T>::equal(x, rhs.x) && scalar<T>::equal(y, rhs.y) && scalar<T>::equal(z, rhs.z); }
         inline bool operator!=(const vector3& rhs) const { return scalar<T>::not_equal(x, rhs.x) || scalar<T>::not_equal(y, rhs.y) || scalar<T>::not_equal(z, rhs.z); }
         inline vector3 operator-() const { return vector3(-x, -y, -z); }
@@ -123,6 +137,14 @@ namespace aul
         vector3_int(const vector2_int<T, U>& rhs, T z_ = scalar_int<T>::ZERO);
         vector3_int& operator=(const T* arr_data);
         vector3_int& operator=(const vector2_int<T, U>& rhs);
+
+#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X) vector3_int(const vector3<X>& rhs) : x((T)rhs.x), y((T)rhs.y), z((T)rhs.z) { } \
+vector3_int& operator =(const vector3<X>& rhs) { x = (T)rhs.x; y = (T)rhs.y; z = (T)rhs.z; return *this; }
+
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(double)
+
+#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
 
         inline bool operator==(const vector3_int& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
         inline bool operator!=(const vector3_int& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z; }

@@ -68,6 +68,20 @@ namespace aul
         vector4& operator=(const vector3<T>& rhs);
         vector4& operator=(const vector2<T>& rhs);
 
+#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X, Y) vector4(const vector4_int<X, Y>& rhs) : x((T)rhs.x), y((T)rhs.y), z((T)rhs.z), w((T)rhs.w) { } \
+vector4& operator =(const vector4_int<X, Y>& rhs) { x = (T)rhs.x; y = (T)rhs.y; z = (T)rhs.z; w = (T)rhs.w; return *this; }
+
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int32, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint32, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int64, double)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint64, double)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int16, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint16, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(int8, float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint8, float)
+
+#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
+
         inline bool operator==(const vector4& rhs) const { return scalar<T>::equal(x, rhs.x) && scalar<T>::equal(y, rhs.y) && scalar<T>::equal(z, rhs.z) && scalar<T>::equal(w, rhs.w); }
         inline bool operator!=(const vector4& rhs) const { return scalar<T>::not_equal(x, rhs.x) || scalar<T>::not_equal(y, rhs.y) || scalar<T>::not_equal(z, rhs.z) || scalar<T>::not_equal(w, rhs.w); }
         inline vector4 operator-() const { return vector4(-x, -y, -z, -w); }
@@ -132,6 +146,14 @@ namespace aul
         vector4_int& operator=(const T* arr_data);
         vector4_int& operator=(const vector3_int<T, U>& rhs);
         vector4_int& operator=(const vector2_int<T, U>& rhs);
+
+#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X) vector4_int(const vector4<X>& rhs) : x((T)rhs.x), y((T)rhs.y), z((T)rhs.z), w((T)rhs.w) { } \
+vector4_int& operator =(const vector4<X>& rhs) { x = (T)rhs.x; y = (T)rhs.y; z = (T)rhs.z; w = (T)rhs.w; return *this; }
+
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(float)
+        AUL_INTERNAL_VECTOR_INT_CONVERSION(double)
+
+#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
 
         inline bool operator==(const vector4_int& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
         inline bool operator!=(const vector4_int& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w; }
