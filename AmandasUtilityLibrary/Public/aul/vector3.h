@@ -81,7 +81,7 @@ namespace aul
         inline T length_sq() const { return x * x + y * y + z * z; }
         vector3& normalize();
         vector3 normalized() const;
-        inline T dot(const vector3& rhs) const { return x * rhs.x + y * rhs.y; }
+        inline T dot(const vector3& rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z; }
         inline vector3 cross(const vector3& rhs) const;
         vector3 project(const vector3& axis) const;
 

@@ -151,6 +151,9 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\simd_math_types.h">
       <Filter>Public\Headers\Math\Impl</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector4.h">
+      <Filter>Public\Headers\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\stdafx.cpp">
@@ -202,6 +205,9 @@
       <Filter>Private\Source\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector3.cpp">
+      <Filter>Private\Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector4.cpp">
       <Filter>Private\Source\Math</Filter>
     </ClCompile>
   </ItemGroup>
