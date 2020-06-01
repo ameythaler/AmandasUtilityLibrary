@@ -15,8 +15,6 @@ namespace aul
 {
     template<typename T> struct vector3;
     template<typename T, typename U> struct vector3_int;
-    template<typename T> struct vector4;
-    template<typename T, typename U> struct vector4_int;
 
     template<typename T>
     wide_ostream& operator<< (wide_ostream& out, const vector3<T>& vec);

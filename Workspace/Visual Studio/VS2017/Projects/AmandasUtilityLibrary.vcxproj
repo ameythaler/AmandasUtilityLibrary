@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\simd_math_types.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\lockable.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\macros.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\matrix3x3.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\scalar_math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\memstack.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\platform.h" />
@@ -52,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp" />
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\matrix3x3.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\scalar_math.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\memstack.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\process.cpp" />
