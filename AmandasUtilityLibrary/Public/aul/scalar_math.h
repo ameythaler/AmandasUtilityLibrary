@@ -19,8 +19,8 @@ namespace aul
     typedef scalar_int<int8> scalari8;
     typedef scalar_int<uint8> scalaru8;
 
-#define AUL_INTERNAL_TRIG(x, y) inline float x(float val) { return y ## f(val); } \
-inline double x(double val) { return y(val); }
+#define AUL_INTERNAL_TRIG(x, y) inline float x(float val) { return std:: ## y ## f(val); } \
+inline double x(double val) { return std:: ## y(val); }
 
     AUL_INTERNAL_TRIG(sin, sin);
     AUL_INTERNAL_TRIG(cos, cos);
@@ -31,10 +31,10 @@ inline double x(double val) { return y(val); }
 
 #undef AUL_INTERNAL_TRIG
 
-    inline float abs(float val) { return ::abs(val); }
-    inline double abs(double val) { return ::abs(val); }
+    inline float abs(float val) { return std::abs(val); }
+    inline double abs(double val) { return std::abs(val); }
 
-#define AUL_INTERNAL_INT_ABS(x) inline x abs(x val) { return (x)::abs(val); }
+#define AUL_INTERNAL_INT_ABS(x) inline x abs(x val) { return (x)std::abs(val); }
 #define AUL_INTERNAL_INT_ABS_UNSIGNED(x) inline x abs(x val) { return val; } // unsigned values are already positive - this is necessary only for templated constructs
 
     AUL_INTERNAL_INT_ABS(int32);
@@ -49,11 +49,11 @@ inline double x(double val) { return y(val); }
 #undef AUL_INTERNAL_INT_ABS
 #undef AUL_INTERNAL_INT_ABS_UNSIGNED
 
-    inline float sqrt(float val) { return ::sqrtf(val); }
-    inline double sqrt(double val) { return ::sqrt(val); }
+    inline float sqrt(float val) { return std::sqrtf(val); }
+    inline double sqrt(double val) { return std::sqrt(val); }
 
-#define AUL_INTERNAL_INT_SQRT32(x) inline x sqrt(x val) { return (x)::sqrtf((float)val); }
-#define AUL_INTERNAL_INT_SQRT64(x) inline x sqrt(x val) { return (x)::sqrt((double)val); }
+#define AUL_INTERNAL_INT_SQRT32(x) inline x sqrt(x val) { return (x)std::sqrtf((float)val); }
+#define AUL_INTERNAL_INT_SQRT64(x) inline x sqrt(x val) { return (x)std::sqrt((double)val); }
 
     AUL_INTERNAL_INT_SQRT32(int32);
     AUL_INTERNAL_INT_SQRT32(uint32);

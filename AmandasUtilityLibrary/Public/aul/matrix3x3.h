@@ -96,6 +96,10 @@ namespace aul
         inline vector3<T> transform_point(const vector3<T>& point) const { return *this * point; }
         inline vector3<T> transform_vector(const vector3<T>& vec) const { return (*this * vec).normalized(); }
         T determinant() const;
+        matrix3x3 inverse() const;
+        static matrix3x3 rotation_x(T radians);
+        static matrix3x3 rotation_y(T radians);
+        static matrix3x3 rotation_z(T radians);
 
         operator wide_string() const;
         friend wide_ostream& operator<< <> (wide_ostream& out, const matrix3x3<T>& mat);

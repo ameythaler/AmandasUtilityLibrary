@@ -87,6 +87,48 @@ namespace aul
     }
 
     template<typename T>
+    matrix3x3<T> matrix3x3<T>::inverse() const
+    {
+        vector3<T> r0 = y.cross(z);
+        vector3<T> r1 = z.cross(x);
+        vector3<T> r2 = x.cross(y);
+
+        T invDet = scalar<T>::ONE / r2.dot(z);
+        matrix3x3<T> retVal(r0, r1, r2);
+        return retVal * invDet;
+    }
+
+    template<typename T>
+    matrix3x3<T> matrix3x3<T>::rotation_x(T radians)
+    {
+        return matrix3x3<T>(
+            scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, cos(radians), -sin(radians),
+            scalar<T>::ZERO, sin(radians), cos(radians)
+            );
+    }
+
+    template<typename T>
+    matrix3x3<T> matrix3x3<T>::rotation_y(T radians)
+    {
+        return matrix3x3<T>(
+            cos(radians), scalar<T>::ZERO, sin(radians),
+            scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
+            -sin(radians), scalar<T>::ZERO, cos(radians)
+            );
+    }
+
+    template<typename T>
+    matrix3x3<T> matrix3x3<T>::rotation_z(T radians)
+    {
+        return matrix3x3<T>(
+            cos(radians), -sin(radians), scalar<T>::ZERO,
+            sin(radians), cos(radians), scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+    }
+
+    template<typename T>
     matrix3x3<T>::operator wide_string() const
     {
         wide_stringstream stream;
