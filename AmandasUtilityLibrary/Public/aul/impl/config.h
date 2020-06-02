@@ -23,15 +23,16 @@
 //////////////////////////////////////////////////////////////////////////
 
 // Definitions:
-#define AUL_LEFT_HANDED_COORDINATES 0
-#define AUL_RIGHT_HANDED_COORDINATES 1
-#define AUL_ROW_MAJOR_ORDER 0
-#define AUL_COLUMN_MAJOR_ORDER 1
+#define AUL_LEFT_HANDED 0
+#define AUL_RIGHT_HANDED 1
+#define AUL_Y_UP 1 // Y-up, X-right, Z-forward
+#define AUL_Z_UP 2// Left-Handed: Z-up, Y-right, X-forward | Right-Handed: Z-up, X-right, Y-forward
+
 
 // Settings:
-#define AUL_USE_COORDINATE_HANDEDNESS AUL_LEFT_HANDED_COORDINATES
-#define AUL_USE_MATRIX_ORDER AUL_ROW_MAJOR_ORDER
-#define AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION 0
+#define AUL_USE_COORDINATE_HANDEDNESS AUL_LEFT_HANDED
+#define AUL_USE_UP_VECTOR AUL_Y_UP
+#define AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION 1
 
 //////////////////////////////////////////////////////////////////////////
 // SIMD support

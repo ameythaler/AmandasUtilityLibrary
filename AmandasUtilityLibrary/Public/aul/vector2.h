@@ -56,19 +56,20 @@ namespace aul
         vector2(const T* arr_data);
         vector2& operator=(const T* arr_data);
 
-#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X, Y) vector2(const vector2_int<X, Y>& rhs) : x((T)rhs.x), y((T)rhs.y) { } \
-vector2& operator =(const vector2_int<X, Y>& rhs) { x = (T)rhs.x; y = (T)rhs.y; return *this; }
-
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(int32, float)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint32, float)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(int64, double)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint64, double)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(int16, float)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint16, float)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(int8, float)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint8, float)
-
-#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
+        // TODO: Fix conversion
+//#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X, Y) vector2(const vector2_int<X, Y>& rhs) : x((T)rhs.x), y((T)rhs.y) { } \
+//vector2& operator =(const vector2_int<X, Y>& rhs) { x = (T)rhs.x; y = (T)rhs.y; return *this; }
+//
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int32, float)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint32, float)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int64, double)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint64, double)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int16, float)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint16, float)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int8, float)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint8, float)
+//
+//#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
 
         inline bool operator==(const vector2& rhs) const { return scalar<T>::equal(x, rhs.x) && scalar<T>::equal(y, rhs.y); }
         inline bool operator!=(const vector2& rhs) const { return scalar<T>::not_equal(x, rhs.x) || scalar<T>::not_equal(y, rhs.y); }
@@ -125,13 +126,14 @@ vector2& operator =(const vector2_int<X, Y>& rhs) { x = (T)rhs.x; y = (T)rhs.y; 
         vector2_int(const T* arr_data);
         vector2_int& operator=(const T* arr_data);
 
-#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X) vector2_int(const vector2<X>& rhs) : x((T)rhs.x), y((T)rhs.y) { } \
-vector2_int& operator =(const vector2<X>& rhs) { x = (T)rhs.x; y = (T)rhs.y; return *this; }
-
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(float)
-        AUL_INTERNAL_VECTOR_INT_CONVERSION(double)
-
-#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
+        // TODO: Fix conversion
+//#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X) vector2_int(const vector2<X>& rhs) : x((T)rhs.x), y((T)rhs.y) { } \
+//vector2_int& operator =(const vector2<X>& rhs) { x = (T)rhs.x; y = (T)rhs.y; return *this; }
+//
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(float)
+//        AUL_INTERNAL_VECTOR_INT_CONVERSION(double)
+//
+//#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
 
         inline bool operator==(const vector2_int& rhs) const { return x == rhs.x && y == rhs.y; }
         inline bool operator!=(const vector2_int& rhs) const { return x != rhs.x || y != rhs.y; }

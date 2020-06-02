@@ -28,7 +28,9 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\impl\simd_math_types.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\lockable.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\macros.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\matrix3x3.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\matrix_math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\scalar_math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\memstack.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\platform.h" />
@@ -49,7 +51,7 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector2.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector3.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector4.h" />
-    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\vector_math.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector_math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp" />

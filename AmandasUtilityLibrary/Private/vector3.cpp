@@ -102,7 +102,7 @@ namespace aul
     template<typename T>
     vector3<T> vector3<T>::cross(const vector3& rhs) const
     {
-        return vector3<T>(x * rhs.z - z * rhs.y, -(x * rhs.z - z * rhs.x), x * rhs.y - y * rhs.x);
+        return vector3<T>(y * rhs.z - z * rhs.y, z * rhs.x - x * rhs.z, x * rhs.y - y * rhs.x);
     }
 
     template<typename T>
