@@ -26,13 +26,16 @@
 #define AUL_LEFT_HANDED 0
 #define AUL_RIGHT_HANDED 1
 #define AUL_Y_UP 1 // Y-up, X-right, Z-forward
-#define AUL_Z_UP 2// Left-Handed: Z-up, Y-right, X-forward | Right-Handed: Z-up, X-right, Y-forward
+#define AUL_Z_UP 2 // Left-Handed: Z-up, Y-right, X-forward | Right-Handed: Z-up, X-right, Y-forward
+#define AUL_VECTOR_RGBA 0
+#define AUL_VECTOR_ARGB 1
 
 
 // Settings:
 #define AUL_USE_COORDINATE_HANDEDNESS AUL_LEFT_HANDED
 #define AUL_USE_UP_VECTOR AUL_Y_UP
 #define AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION 1
+#define AUL_USE_VECTOR_COLOR_ALIAS AUL_VECTOR_RGBA
 
 //////////////////////////////////////////////////////////////////////////
 // SIMD support

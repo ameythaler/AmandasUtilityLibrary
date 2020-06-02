@@ -47,6 +47,24 @@ namespace aul
                 T y;
                 T z;
             };
+            struct
+            {
+                T r;
+                T g;
+                T b;
+            };
+            struct
+            {
+                T u;
+                T v;
+                T s;
+            };
+            struct
+            {
+                T yaw;
+                T pitch;
+                T roll;
+            };
             vector2<T> xy;
         };
 
@@ -121,6 +139,24 @@ namespace aul
                 T x;
                 T y;
                 T z;
+            };
+            struct  
+            {
+                T r;
+                T g;
+                T b;
+            };
+            struct  
+            {
+                T u;
+                T v;
+                T s;
+            };
+            struct  
+            {
+                T yaw;
+                T pitch;
+                T roll;
             };
             vector2_int<T, U> xy;
         };

@@ -49,6 +49,33 @@ namespace aul
                 T z;
                 T w;
             };
+            struct  
+            {
+#if AUL_USE_VECTOR_COLOR_ALIAS == AUL_VECTOR_RGBA
+                T r;
+                T g;
+                T b;
+                T a;
+#elif AUL_USE_VECTOR_COLOR_ALIAS == AUL_VECTOR_ARGB
+                T a;
+                T r;
+                T g;
+                T b;
+#endif // AUL_USE_VECTOR_COLOR_ALIAS
+            };
+            struct
+            {
+                T u;
+                T v;
+                T s;
+                T t;
+            };
+            struct  
+            {
+                T yaw;
+                T pitch;
+                T roll;
+            };
             vector2<T> xy;
             vector3<T> xyz;
         };
@@ -128,6 +155,33 @@ namespace aul
                 T y;
                 T z;
                 T w;
+            };
+            struct
+            {
+#if AUL_USE_VECTOR_COLOR_ALIAS == AUL_VECTOR_RGBA
+                T r;
+                T g;
+                T b;
+                T a;
+#elif AUL_USE_VECTOR_COLOR_ALIAS == AUL_VECTOR_ARGB
+                T a;
+                T r;
+                T g;
+                T b;
+#endif // AUL_USE_VECTOR_COLOR_ALIAS
+            };
+            struct
+            {
+                T u;
+                T v;
+                T s;
+                T t;
+            };
+            struct
+            {
+                T yaw;
+                T pitch;
+                T roll;
             };
             vector2_int<T, U> xy;
             vector3_int<T, U> xyz;

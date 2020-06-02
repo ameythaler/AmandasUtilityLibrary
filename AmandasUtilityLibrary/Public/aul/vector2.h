@@ -45,6 +45,11 @@ namespace aul
                 T x;
                 T y;
             };
+            struct  
+            {
+                T u;
+                T v;
+            };
         };
 
         static const vector2 ZERO;
@@ -114,6 +119,11 @@ namespace aul
             {
                 T x;
                 T y;
+            };
+            struct  
+            {
+                T u;
+                T v;
             };
         };
 
