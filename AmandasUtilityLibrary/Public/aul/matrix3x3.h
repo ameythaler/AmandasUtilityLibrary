@@ -111,6 +111,7 @@ namespace aul
         inline friend matrix3x3 operator/(T lhs, const matrix3x3<T>& rhs) { return matrix3x3<T>(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z); }
         matrix3x3 operator*(const matrix3x3& rhs) const;
         vector3<T> operator*(const vector3<T>& rhs) const;
+        inline friend vector3<T> operator* (const vector3<T>& lhs, const matrix3x3<T>& rhs) { return rhs * lhs; }
         inline matrix3x3& operator*=(T rhs) { x *= rhs; y *= rhs; z *= rhs; return *this; }
         inline matrix3x3& operator/=(T rhs) { x /= rhs; y /= rhs; z /= rhs; return *this; }
         inline matrix3x3& operator*=(const matrix3x3& rhs);
@@ -190,4 +191,15 @@ extern template struct matrix3x3<T>
     AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC(double, d);
 
 #undef AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC
+
+    //////////////////////////////////////////////////////////////////////////
+    // Conversion
+    //////////////////////////////////////////////////////////////////////////
+
+#define AUL_INTERNAL_CONVERT_DEC(T, U) template<> matrix3x3<T>& convert<matrix3x3<T>, matrix3x3<U>>(matrix3x3<T>& to, const matrix3x3<U>& from); \
+template<> matrix3x3<U>& convert<matrix3x3<U>, matrix3x3<T>>(matrix3x3<U>& to, const matrix3x3<T>& from)
+
+    AUL_INTERNAL_CONVERT_DEC(float, double);
+
+#undef AUL_INTERNAL_CONVERT_DEC
 }

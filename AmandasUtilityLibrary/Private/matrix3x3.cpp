@@ -653,4 +653,25 @@ namespace aul
     }
 
 #undef AUL_INTERNAL_ZERO_NON_DIAGONAL
+
+    //////////////////////////////////////////////////////////////////////////
+    // Conversion
+    //////////////////////////////////////////////////////////////////////////
+
+#define AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, U) template<> \
+matrix3x3<T>& convert<matrix3x3<T>, matrix3x3<U>>(matrix3x3<T>& to, const matrix3x3<U>& from) \
+{ \
+to.m00 = (T)from.m00; to.m01 = (T)from.m01; to.m02 = (T)from.m02; \
+to.m10 = (T)from.m10; to.m11 = (T)from.m11; to.m12 = (T)from.m12; \
+to.m20 = (T)from.m20; to.m21 = (T)from.m21; to.m22 = (T)from.m22; \
+return to; \
+}
+
+#define AUL_INTERNAL_CONVERT_DEF(T, U) AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, U) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(U, T)
+
+    AUL_INTERNAL_CONVERT_DEF(float, double);
+
+#undef AUL_INTERNAL_CONVERT_DEF
+#undef AUL_INTERNAL_CONVERT_DEF_PARTIAL
 }
