@@ -61,21 +61,6 @@ namespace aul
         vector2(const T* arr_data);
         vector2& operator=(const T* arr_data);
 
-        // TODO: Fix conversion
-//#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X, Y) vector2(const vector2_int<X, Y>& rhs) : x((T)rhs.x), y((T)rhs.y) { } \
-//vector2& operator =(const vector2_int<X, Y>& rhs) { x = (T)rhs.x; y = (T)rhs.y; return *this; }
-//
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int32, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint32, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int64, double)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint64, double)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int16, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint16, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int8, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint8, float)
-//
-//#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
-
         inline bool operator==(const vector2& rhs) const { return scalar<T>::equal(x, rhs.x) && scalar<T>::equal(y, rhs.y); }
         inline bool operator!=(const vector2& rhs) const { return scalar<T>::not_equal(x, rhs.x) || scalar<T>::not_equal(y, rhs.y); }
         inline vector2 operator-() const { return vector2(-x, -y); }
@@ -136,15 +121,6 @@ namespace aul
         vector2_int(const T* arr_data);
         vector2_int& operator=(const T* arr_data);
 
-        // TODO: Fix conversion
-//#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X) vector2_int(const vector2<X>& rhs) : x((T)rhs.x), y((T)rhs.y) { } \
-//vector2_int& operator =(const vector2<X>& rhs) { x = (T)rhs.x; y = (T)rhs.y; return *this; }
-//
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(double)
-//
-//#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
-
         inline bool operator==(const vector2_int& rhs) const { return x == rhs.x && y == rhs.y; }
         inline bool operator!=(const vector2_int& rhs) const { return x != rhs.x || y != rhs.y; }
         inline vector2_int operator-() const { return vector2_int(-x, -y); }
@@ -192,6 +168,53 @@ extern template struct vector2_int<T, U>
 
 #undef AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC
 #undef AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC_INT
+
+    //////////////////////////////////////////////////////////////////////////
+    // Conversion
+    //////////////////////////////////////////////////////////////////////////
+
+#define AUL_INTERNAL_CONVERT_DEC_PARTIAL(T, U, V) template<> vector2<T>& convert<vector2<T>, vector2_int<U, V>>(vector2<T>& to, const vector2_int<U, V>& from); \
+template<> vector2_int<U, V>& convert<vector2_int<U, V>, vector2<T>>(vector2_int<U, V>& to, const vector2<T>& from)
+
+#define AUL_INTERNAL_CONVERT_DEC(T, U, V, W) AUL_INTERNAL_CONVERT_DEC_PARTIAL(T, V, W); \
+AUL_INTERNAL_CONVERT_DEC_PARTIAL(U, V, W); \
+AUL_INTERNAL_CONVERT_DEC_PARTIAL(T, u ## V, W); \
+AUL_INTERNAL_CONVERT_DEC_PARTIAL(U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEC_INT(T, U, V, W) template<> vector2_int<T, U>& convert<vector2_int<T, U>, vector2_int<V, W>>(vector2_int<T, U>& to, const vector2_int<V, W>& from)
+
+#define AUL_INTERNAL_CONVERT_DEC_INT_CROSS(T, U, V, W) AUL_INTERNAL_CONVERT_DEC_INT(T, U, V, W); \
+AUL_INTERNAL_CONVERT_DEC_INT(u ## T, U, V, W); \
+AUL_INTERNAL_CONVERT_DEC_INT(T, U, u ## V, W); \
+AUL_INTERNAL_CONVERT_DEC_INT(u ## T, U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(S, T, U, V, W, X, Y, Z) AUL_INTERNAL_CONVERT_DEC_INT(S, T, u ## S, T); \
+AUL_INTERNAL_CONVERT_DEC_INT(u ## S, T, S, T); \
+AUL_INTERNAL_CONVERT_DEC_INT_CROSS(S, T, U, V); \
+AUL_INTERNAL_CONVERT_DEC_INT_CROSS(S, T, W, X); \
+AUL_INTERNAL_CONVERT_DEC_INT_CROSS(S, T, Y, Z);
+
+#define AUL_INTERNAL_CONVERT_DEC_FLOAT(T, U) template<> vector2<T>& convert<vector2<T>, vector2<U>>(vector2<T>& to, const vector2<U>& from); \
+template<> vector2<U>& convert<vector2<U>, vector2<T>>(vector2<U>& to, const vector2<T>& from)
+
+    AUL_INTERNAL_CONVERT_DEC(float, double, int32, float);
+    AUL_INTERNAL_CONVERT_DEC(float, double, int64, double);
+    AUL_INTERNAL_CONVERT_DEC(float, double, int16, float);
+    AUL_INTERNAL_CONVERT_DEC(float, double, int8, float);
+
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int32, float, int64, double, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int64, double, int32, float, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int16, float, int32, float, int64, double, int8, float);
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int8, float, int32, float, int64, double, int16, float);
+
+    AUL_INTERNAL_CONVERT_DEC_FLOAT(float, double);
+
+#undef AUL_INTERNAL_CONVERT_DEC_FLOAT
+#undef AUL_INTERNAL_CONVERT_DEC_INT_FAMILY
+#undef AUL_INTERNAL_CONVERT_DEC_INT_CROSS
+#undef AUL_INTERNAL_CONVERT_DEC_INT
+#undef AUL_INTERNAL_CONVERT_DEC
+#undef AUL_INTERNAL_CONVERT_DEC_PARTIAL
 
     // SIMD set and get
 #if AUL_USE_SSE

@@ -247,4 +247,54 @@ namespace aul
         out << "<" << (int32)vec.x << ", " << (int32)vec.y << ", " << (int32)vec.z << ", " << (int32)vec.w << ">";
         return out;
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Conversion
+    //////////////////////////////////////////////////////////////////////////
+
+#define AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, U, V) \
+template<> vector4<T>& convert<vector4<T>, vector4_int<U, V>>(vector4<T>& to, const vector4_int<U, V>& from) { to.x = (T)from.x; to.y = (T)from.y; to.z = (T)from.z; to.w = (T)from.w; return to; } \
+template<> vector4_int<U, V>& convert<vector4_int<U, V>, vector4<T>>(vector4_int<U, V>& to, const vector4<T>& from) { to.x = (U)from.x; to.y = (U)from.y; to.z = (U)from.z; to.w = (U)from.w; return to; }
+
+#define AUL_INTERNAL_CONVERT_DEF(T, U, V, W) AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, V, W) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(U, V, W) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, u ## V, W) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEF_INT(T, U, V, W) \
+template<> vector4_int<T, U>& convert<vector4_int<T, U>, vector4_int<V, W>>(vector4_int<T, U>& to, const vector4_int<V, W>& from) { to.x = (T)from.x; to.y = (T)from.y; to.z = (T)from.z; to.w = (T)from.w; return to; }
+
+#define AUL_INTERNAL_CONVERT_DEF_INT_CROSS(T, U, V, W) AUL_INTERNAL_CONVERT_DEF_INT(T, U, V, W) \
+AUL_INTERNAL_CONVERT_DEF_INT(u ## T, U, V, W) \
+AUL_INTERNAL_CONVERT_DEF_INT(T, U, u ## V, W) \
+AUL_INTERNAL_CONVERT_DEF_INT(u ## T, U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(S, T, U, V, W, X, Y, Z) AUL_INTERNAL_CONVERT_DEF_INT(S, T, u ## S, T) \
+AUL_INTERNAL_CONVERT_DEF_INT(u ## S, T, S, T) \
+AUL_INTERNAL_CONVERT_DEF_INT_CROSS(S, T, U, V) \
+AUL_INTERNAL_CONVERT_DEF_INT_CROSS(S, T, W, X) \
+AUL_INTERNAL_CONVERT_DEF_INT_CROSS(S, T, Y, Z)
+
+#define AUL_INTERNAL_CONVERT_DEF_FLOAT(T, U) \
+template<> vector4<T>& convert<vector4<T>, vector4<U>>(vector4<T>& to, const vector4<U>& from) { to.x = (T)from.x; to.y = (T)from.y; to.z = (T)from.z; to.w = (T)from.w; return to; } \
+template<> vector4<U>& convert<vector4<U>, vector4<T>>(vector4<U>& to, const vector4<T>& from) { to.x = (U)from.x; to.y = (U)from.y; to.z = (U)from.z; to.w = (U)from.w; return to; }
+
+    AUL_INTERNAL_CONVERT_DEF(float, double, int32, float);
+    AUL_INTERNAL_CONVERT_DEF(float, double, int64, double);
+    AUL_INTERNAL_CONVERT_DEF(float, double, int16, float);
+    AUL_INTERNAL_CONVERT_DEF(float, double, int8, float);
+
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int32, float, int64, double, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int64, double, int32, float, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int16, float, int32, float, int64, double, int8, float);
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int8, float, int32, float, int64, double, int16, float);
+
+    AUL_INTERNAL_CONVERT_DEF_FLOAT(float, double);
+
+#undef AUL_INTERNAL_CONVERT_DEF_FLOAT
+#undef AUL_INTERNAL_CONVERT_DEF_INT_FAMILY
+#undef AUL_INTERNAL_CONVERT_DEF_INT_CROSS
+#undef AUL_INTERNAL_CONVERT_DEF_INT
+#undef AUL_INTERNAL_CONVERT_DEF
+#undef AUL_INTERNAL_CONVERT_DEF_PARTIAL
 }

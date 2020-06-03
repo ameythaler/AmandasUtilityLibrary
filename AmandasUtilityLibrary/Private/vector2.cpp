@@ -169,4 +169,54 @@ namespace aul
         out << "<" << (int32)vec.x << ", " << (int32)vec.y << ">";
         return out;
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    // Conversion
+    //////////////////////////////////////////////////////////////////////////
+
+#define AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, U, V) \
+template<> vector2<T>& convert<vector2<T>, vector2_int<U, V>>(vector2<T>& to, const vector2_int<U, V>& from) { to.x = (T)from.x; to.y = (T)from.y; return to; } \
+template<> vector2_int<U, V>& convert<vector2_int<U, V>, vector2<T>>(vector2_int<U, V>& to, const vector2<T>& from) { to.x = (U)from.x; to.y = (U)from.y; return to; }
+
+#define AUL_INTERNAL_CONVERT_DEF(T, U, V, W) AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, V, W) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(U, V, W) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, u ## V, W) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEF_INT(T, U, V, W) \
+template<> vector2_int<T, U>& convert<vector2_int<T, U>, vector2_int<V, W>>(vector2_int<T, U>& to, const vector2_int<V, W>& from) { to.x = (T)from.x; to.y = (T)from.y; return to; }
+
+#define AUL_INTERNAL_CONVERT_DEF_INT_CROSS(T, U, V, W) AUL_INTERNAL_CONVERT_DEF_INT(T, U, V, W) \
+AUL_INTERNAL_CONVERT_DEF_INT(u ## T, U, V, W) \
+AUL_INTERNAL_CONVERT_DEF_INT(T, U, u ## V, W) \
+AUL_INTERNAL_CONVERT_DEF_INT(u ## T, U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(S, T, U, V, W, X, Y, Z) AUL_INTERNAL_CONVERT_DEF_INT(S, T, u ## S, T) \
+AUL_INTERNAL_CONVERT_DEF_INT(u ## S, T, S, T) \
+AUL_INTERNAL_CONVERT_DEF_INT_CROSS(S, T, U, V) \
+AUL_INTERNAL_CONVERT_DEF_INT_CROSS(S, T, W, X) \
+AUL_INTERNAL_CONVERT_DEF_INT_CROSS(S, T, Y, Z)
+
+#define AUL_INTERNAL_CONVERT_DEF_FLOAT(T, U) \
+template<> vector2<T>& convert<vector2<T>, vector2<U>>(vector2<T>& to, const vector2<U>& from) { to.x = (T)from.x; to.y = (T)from.y; return to; } \
+template<> vector2<U>& convert<vector2<U>, vector2<T>>(vector2<U>& to, const vector2<T>& from) { to.x = (U)from.x; to.y = (U)from.y; return to; }
+
+    AUL_INTERNAL_CONVERT_DEF(float, double, int32, float);
+    AUL_INTERNAL_CONVERT_DEF(float, double, int64, double);
+    AUL_INTERNAL_CONVERT_DEF(float, double, int16, float);
+    AUL_INTERNAL_CONVERT_DEF(float, double, int8, float);
+
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int32, float, int64, double, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int64, double, int32, float, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int16, float, int32, float, int64, double, int8, float);
+    AUL_INTERNAL_CONVERT_DEF_INT_FAMILY(int8, float, int32, float, int64, double, int16, float);
+
+    AUL_INTERNAL_CONVERT_DEF_FLOAT(float, double);
+
+#undef AUL_INTERNAL_CONVERT_DEF_FLOAT
+#undef AUL_INTERNAL_CONVERT_DEF_INT_FAMILY
+#undef AUL_INTERNAL_CONVERT_DEF_INT_CROSS
+#undef AUL_INTERNAL_CONVERT_DEF_INT
+#undef AUL_INTERNAL_CONVERT_DEF
+#undef AUL_INTERNAL_CONVERT_DEF_PARTIAL
 }

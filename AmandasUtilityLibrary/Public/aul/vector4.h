@@ -95,21 +95,6 @@ namespace aul
         vector4& operator=(const vector3<T>& rhs);
         vector4& operator=(const vector2<T>& rhs);
 
-        // TODO: Fix conversion
-//#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X, Y) vector4(const vector4_int<X, Y>& rhs) : x((T)rhs.x), y((T)rhs.y), z((T)rhs.z), w((T)rhs.w) { } \
-//vector4& operator =(const vector4_int<X, Y>& rhs) { x = (T)rhs.x; y = (T)rhs.y; z = (T)rhs.z; w = (T)rhs.w; return *this; }
-//
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int32, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint32, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int64, double)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint64, double)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int16, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint16, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(int8, float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(uint8, float)
-//
-//#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
-
         inline bool operator==(const vector4& rhs) const { return scalar<T>::equal(x, rhs.x) && scalar<T>::equal(y, rhs.y) && scalar<T>::equal(z, rhs.z) && scalar<T>::equal(w, rhs.w); }
         inline bool operator!=(const vector4& rhs) const { return scalar<T>::not_equal(x, rhs.x) || scalar<T>::not_equal(y, rhs.y) || scalar<T>::not_equal(z, rhs.z) || scalar<T>::not_equal(w, rhs.w); }
         inline vector4 operator-() const { return vector4(-x, -y, -z, -w); }
@@ -202,15 +187,6 @@ namespace aul
         vector4_int& operator=(const vector3_int<T, U>& rhs);
         vector4_int& operator=(const vector2_int<T, U>& rhs);
 
-        // TODO: Fix conversion
-//#define AUL_INTERNAL_VECTOR_INT_CONVERSION(X) vector4_int(const vector4<X>& rhs) : x((T)rhs.x), y((T)rhs.y), z((T)rhs.z), w((T)rhs.w) { } \
-//vector4_int& operator =(const vector4<X>& rhs) { x = (T)rhs.x; y = (T)rhs.y; z = (T)rhs.z; w = (T)rhs.w; return *this; }
-//
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(float)
-//        AUL_INTERNAL_VECTOR_INT_CONVERSION(double)
-//
-//#undef AUL_INTERNAL_VECTOR_INT_CONVERSION
-
         inline bool operator==(const vector4_int& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
         inline bool operator!=(const vector4_int& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w; }
         inline vector4_int operator-() const { return vector4_int(-x, -y, -z, -w); }
@@ -258,6 +234,53 @@ extern template struct vector4_int<T, U>
 
 #undef AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC
 #undef AUL_INTERNAL_EXPLICIT_SPEC_INST_DEC_INT
+
+    //////////////////////////////////////////////////////////////////////////
+    // Conversion
+    //////////////////////////////////////////////////////////////////////////
+
+#define AUL_INTERNAL_CONVERT_DEC_PARTIAL(T, U, V) template<> vector4<T>& convert<vector4<T>, vector4_int<U, V>>(vector4<T>& to, const vector4_int<U, V>& from); \
+template<> vector4_int<U, V>& convert<vector4_int<U, V>, vector4<T>>(vector4_int<U, V>& to, const vector4<T>& from)
+
+#define AUL_INTERNAL_CONVERT_DEC(T, U, V, W) AUL_INTERNAL_CONVERT_DEC_PARTIAL(T, V, W); \
+AUL_INTERNAL_CONVERT_DEC_PARTIAL(U, V, W); \
+AUL_INTERNAL_CONVERT_DEC_PARTIAL(T, u ## V, W); \
+AUL_INTERNAL_CONVERT_DEC_PARTIAL(U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEC_INT(T, U, V, W) template<> vector4_int<T, U>& convert<vector4_int<T, U>, vector4_int<V, W>>(vector4_int<T, U>& to, const vector4_int<V, W>& from)
+
+#define AUL_INTERNAL_CONVERT_DEC_INT_CROSS(T, U, V, W) AUL_INTERNAL_CONVERT_DEC_INT(T, U, V, W); \
+AUL_INTERNAL_CONVERT_DEC_INT(u ## T, U, V, W); \
+AUL_INTERNAL_CONVERT_DEC_INT(T, U, u ## V, W); \
+AUL_INTERNAL_CONVERT_DEC_INT(u ## T, U, u ## V, W)
+
+#define AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(S, T, U, V, W, X, Y, Z) AUL_INTERNAL_CONVERT_DEC_INT(S, T, u ## S, T); \
+AUL_INTERNAL_CONVERT_DEC_INT(u ## S, T, S, T); \
+AUL_INTERNAL_CONVERT_DEC_INT_CROSS(S, T, U, V); \
+AUL_INTERNAL_CONVERT_DEC_INT_CROSS(S, T, W, X); \
+AUL_INTERNAL_CONVERT_DEC_INT_CROSS(S, T, Y, Z);
+
+#define AUL_INTERNAL_CONVERT_DEC_FLOAT(T, U) template<> vector4<T>& convert<vector4<T>, vector4<U>>(vector4<T>& to, const vector4<U>& from); \
+template<> vector4<U>& convert<vector4<U>, vector4<T>>(vector4<U>& to, const vector4<T>& from)
+
+    AUL_INTERNAL_CONVERT_DEC(float, double, int32, float);
+    AUL_INTERNAL_CONVERT_DEC(float, double, int64, double);
+    AUL_INTERNAL_CONVERT_DEC(float, double, int16, float);
+    AUL_INTERNAL_CONVERT_DEC(float, double, int8, float);
+
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int32, float, int64, double, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int64, double, int32, float, int16, float, int8, float);
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int16, float, int32, float, int64, double, int8, float);
+    AUL_INTERNAL_CONVERT_DEC_INT_FAMILY(int8, float, int32, float, int64, double, int16, float);
+
+    AUL_INTERNAL_CONVERT_DEC_FLOAT(float, double);
+
+#undef AUL_INTERNAL_CONVERT_DEC_FLOAT
+#undef AUL_INTERNAL_CONVERT_DEC_INT_FAMILY
+#undef AUL_INTERNAL_CONVERT_DEC_INT_CROSS
+#undef AUL_INTERNAL_CONVERT_DEC_INT
+#undef AUL_INTERNAL_CONVERT_DEC
+#undef AUL_INTERNAL_CONVERT_DEC_PARTIAL
 
     // SIMD set and get
 #if AUL_USE_SSE

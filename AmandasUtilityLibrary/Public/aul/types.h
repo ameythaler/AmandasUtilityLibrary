@@ -51,4 +51,7 @@ namespace aul
     typedef int64_t int64;
 
     typedef uint32 thread_id;
+
+    template<typename T_TO, typename T_FROM>
+    T_TO& convert(T_TO& to, const T_FROM& from) { to = (T_TO)from; return to; }
 }
