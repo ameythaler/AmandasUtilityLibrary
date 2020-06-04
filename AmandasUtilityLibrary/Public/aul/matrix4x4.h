@@ -154,8 +154,9 @@ namespace aul
         inline matrix4x4& major_diagonal(const vector4<T>& diagonal) { m00 = diagonal.x; m11 = diagonal.y; m22 = diagonal.z; m33 = diagonal.w; return *this; }
         matrix4x4& transpose();
         matrix4x4 transposed() const;
-        inline vector4<T> transform_point(const vector4<T>& point) const { return *this * point; }
-        inline vector4<T> transform_vector(const vector4<T>& vec) const { return (*this * vec).normalized(); }
+        inline vector4<T> transform(const vector4<T>& point) const { return *this * point; }
+        vector3<T> transform_point(const vector3<T>& point) const;
+        vector3<T> transform_vector(const vector3<T>& vec) const;
         T determinant() const;
         matrix4x4 inverse() const;
         matrix4x4& invert();

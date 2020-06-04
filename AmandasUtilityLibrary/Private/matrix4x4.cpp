@@ -173,6 +173,34 @@ namespace aul
     }
 
     template<typename T>
+    vector3<T> matrix4x4<T>::transform_point(const vector3<T>& point) const
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return vector3<T>(m00 * point.x + m10 * point.y + m20 * point.z + m30,
+            m01 * point.x + m11 * point.y + m21 * point.z + m31,
+            m02 * point.x + m12 * point.y + m22 * point.z + m32) / (m03 * point.x + m13 * point.y + m23 * point.z + m33);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return vector3<T>(m00 * point.x + m01 * point.y + m02 * point.z + m03,
+            m10 * point.x + m11 * point.y + m12 * point.z + m13,
+            m20 * point.x + m21 * point.y + m22 * point.z + m23) / (m30 * point.x + m31 * point.y + m32 * point.z + m33);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    vector3<T> matrix4x4<T>::transform_vector(const vector3<T>& vec) const
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return vector3<T>(m00 * vec.x + m10 * vec.y + m20 * vec.z,
+            m01 * vec.x + m11 * vec.y + m21 * vec.z,
+            m02 * vec.x + m12 * vec.y + m22 * vec.z);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return vector3<T>(m00 * vec.x + m01 * vec.y + m02 * vec.z,
+            m10 * vec.x + m11 * vec.y + m12 * vec.z,
+            m20 * vec.x + m21 * vec.y + m22 * vec.z);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
     T matrix4x4<T>::determinant() const
     {
         T det0 = m11 * (m22 * m33 - m23 * m32) - m12 * (m21 * m33 - m23 * m31) + m13 * (m21 * m32 - m22 * m31);
