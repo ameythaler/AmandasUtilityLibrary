@@ -8,6 +8,7 @@ namespace aul
 {
     template<typename T> struct matrix4x4;
     template<typename T> struct matrix3x3;
+    template<typename T> struct xform;
 
     template<typename T>
     wide_ostream& operator<< (wide_ostream& out, const matrix4x4<T>& mat);
@@ -126,13 +127,16 @@ namespace aul
             , m20(scalar<T>::ZERO), m21(scalar<T>::ZERO), m22(diagonal.z), m23(scalar<T>::ZERO)
             , m30(scalar<T>::ZERO), m31(scalar<T>::ZERO), m32(scalar<T>::ZERO), m33(diagonal.w)
         { }
+        matrix4x4(const xform<T>& rhs);
         matrix4x4(const matrix3x3<T>& rhs);
         matrix4x4(const T* arr_data);
         matrix4x4& operator=(const T* arr_data);
         matrix4x4& operator=(const vector4<T>& diagonal);
         matrix4x4& operator=(const vector3<T>& diagonal);
+        matrix4x4& operator=(const xform<T>& rhs);
         matrix4x4& operator=(const matrix3x3<T>& rhs);
 
+        // matrix4x4 operators
         inline bool operator==(const matrix4x4& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
         inline bool operator!=(const matrix4x4& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w; }
         inline matrix4x4 operator-() const { return matrix4x4(-x, -y, -z, -w); }
@@ -148,6 +152,14 @@ namespace aul
         inline matrix4x4& operator*=(T rhs) { x *= rhs; y *= rhs; z *= rhs; w *= rhs; return *this; }
         inline matrix4x4& operator/=(T rhs) { x /= rhs; y /= rhs; z /= rhs; w /= rhs; return *this; }
         inline matrix4x4& operator*=(const matrix4x4& rhs);
+
+        // xform operators
+        inline bool operator==(const xform<T>& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w; }
+        inline bool operator!=(const xform<T>& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z || w != rhs.w; }
+        inline matrix4x4 operator+(const xform<T>& rhs) const { return matrix4x4(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w); }
+        inline matrix4x4 operator-(const xform<T>& rhs) const { return matrix4x4(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w); }
+        matrix4x4 operator*(const xform<T>& rhs) const;
+        inline matrix4x4& operator*=(const xform<T>& rhs);
 
         inline vector4<T> major_diagonal() const { return vector4<T>(m00, m11, m22, m33); }
         inline matrix4x4& major_diagonal(T diagonal_x, T diagonal_y, T diagonal_z, T diagonal_w) { m00 = diagonal_x; m11 = diagonal_y; m22 = diagonal_z; m33 = diagonal_w; return *this; }

@@ -1,22 +1,22 @@
 #include "stdafx.h"
-#include <aul/matrix4x4.h>
-#include <aul/matrix3x3.h>
 #include <aul/xform.h>
+#include <aul/matrix3x3.h>
+#include <aul/matrix4x4.h>
 
 namespace aul
 {
 #define AUL_INTERNAL_ZERO_NON_DIAGONAL() m01 = m02 = m03 = m10 = m12 = m13 = m20 = m21 = m23 = m30 = m31 = m32 = scalar<T>::ZERO
 
     template<typename T>
-    const matrix4x4<T> matrix4x4<T>::ZERO = matrix4x4<T>(vector4<T>::ZERO, vector4<T>::ZERO, vector4<T>::ZERO, vector4<T>::ZERO);
+    const xform<T> xform<T>::ZERO = xform<T>(vector4<T>::ZERO, vector4<T>::ZERO, vector4<T>::ZERO, vector4<T>::ZERO);
 
     template<typename T>
-    const matrix4x4<T> matrix4x4<T>::IDENTITY = matrix4x4<T>(vector4<T>::ONE);
+    const xform<T> xform<T>::IDENTITY = xform<T>(vector4<T>::ONE);
 
     template<typename T>
-    const matrix4x4<T> matrix4x4<T>::NEGATIVE_IDENTITY = matrix4x4<T>(-vector4<T>::ONE);
+    const xform<T> xform<T>::NEGATIVE_IDENTITY = xform<T>(-vector4<T>::ONE);
 
-#define AUL_INTERNAL_EXPLICIT_INST_DEF(T) template struct matrix4x4<T>
+#define AUL_INTERNAL_EXPLICIT_INST_DEF(T) template struct xform<T>
 
     AUL_INTERNAL_EXPLICIT_INST_DEF(float);
     AUL_INTERNAL_EXPLICIT_INST_DEF(double);
@@ -24,21 +24,28 @@ namespace aul
 #undef AUL_INTERNAL_EXPLICIT_INST_DEF
 
     template<typename T>
-    matrix4x4<T>::matrix4x4(const T* arr_data)
+    xform<T>::xform(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 16);
     }
 
     template<typename T>
-    matrix4x4<T>::matrix4x4(const xform<T>& rhs)
+    xform<T>::xform(const matrix4x4<T>& rhs)
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        : m00(rhs.m00), m01(rhs.m01), m02(rhs.m02), m03(scalar<T>::ZERO)
+        , m10(rhs.m10), m11(rhs.m11), m12(rhs.m12), m13(scalar<T>::ZERO)
+        , m20(rhs.m20), m21(rhs.m21), m22(rhs.m22), m23(scalar<T>::ZERO)
+        , m30(rhs.m30), m31(rhs.m31), m32(rhs.m32), m33(scalar<T>::ONE)
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         : m00(rhs.m00), m01(rhs.m01), m02(rhs.m02), m03(rhs.m03)
         , m10(rhs.m10), m11(rhs.m11), m12(rhs.m12), m13(rhs.m13)
         , m20(rhs.m20), m21(rhs.m21), m22(rhs.m22), m23(rhs.m23)
-        , m30(rhs.m30), m31(rhs.m31), m32(rhs.m32), m33(rhs.m33)
+        , m30(scalar<T>::ZERO), m31(scalar<T>::ZERO), m32(scalar<T>::ZERO), m33(scalar<T>::ONE)
+#endif // AUL_USE_COORDINATE_HANDEDNESS
     { }
 
     template<typename T>
-    matrix4x4<T>::matrix4x4(const matrix3x3<T>& rhs)
+    xform<T>::xform(const matrix3x3<T>& rhs)
         : m00(rhs.m00), m01(rhs.m01), m02(rhs.m02), m03(scalar<T>::ZERO)
         , m10(rhs.m10), m11(rhs.m11), m12(rhs.m12), m13(scalar<T>::ZERO)
         , m20(rhs.m20), m21(rhs.m21), m22(rhs.m22), m23(scalar<T>::ZERO)
@@ -46,14 +53,14 @@ namespace aul
     { }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::operator=(const T* arr_data)
+    xform<T>& xform<T>::operator=(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 16);
         return *this;
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::operator=(const vector4<T>& diagonal)
+    xform<T>& xform<T>::operator=(const vector4<T>& diagonal)
     {
         m00 = diagonal.x;
         m11 = diagonal.y;
@@ -64,7 +71,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::operator=(const vector3<T>& diagonal)
+    xform<T>& xform<T>::operator=(const vector3<T>& diagonal)
     {
         m00 = diagonal.x;
         m11 = diagonal.y;
@@ -75,14 +82,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::operator=(const xform<T>& rhs)
-    {
-        memcpy(data, rhs.data, sizeof(T) * 16);
-        return *this;
-    }
-
-    template<typename T>
-    matrix4x4<T>& matrix4x4<T>::operator=(const matrix3x3<T>& rhs)
+    xform<T>& xform<T>::operator=(const matrix3x3<T>& rhs)
     {
         x.xyz = rhs.x;
         y.xyz = rhs.y;
@@ -93,34 +93,71 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::operator*(const matrix4x4<T>& rhs) const
+    xform<T>& xform<T>::operator=(const matrix4x4<T>& rhs)
     {
-        return matrix4x4<T>(
-            // row 0
-            m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30,
-            m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31,
-            m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32,
-            m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03 * rhs.m33,
-            // row 1
-            m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30,
-            m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31,
-            m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32,
-            m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13 * rhs.m33,
-            // row 2
-            m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30,
-            m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31,
-            m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32,
-            m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23 * rhs.m33,
-            // row 3
-            m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30,
-            m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31,
-            m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32,
-            m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33 * rhs.m33
-            );
+        x.xyz = rhs.x.xyz;
+        y.xyz = rhs.y.xyz;
+        z.xyz = rhs.z.xyz;
+        w.xyz = rhs.w.xyz;
+        x.w = y.w = z.w = scalar<T>::ZERO;
+        w.w = scalar<T>::ONE;
+        return *this;
     }
 
     template<typename T>
-    vector4<T> matrix4x4<T>::operator*(const vector4<T>& rhs) const
+    xform<T> xform<T>::operator*(const xform<T>& rhs) const
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return xform<T>(
+            // row 0
+            m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20,
+            m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21,
+            m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22,
+            scalar<T>::ZERO,
+            // row 1
+            m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20,
+            m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21,
+            m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22,
+            scalar<T>::ZERO,
+            // row 2
+            m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20,
+            m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21,
+            m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22,
+            scalar<T>::ZERO,
+            // row 3
+            m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + rhs.m30,
+            m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + rhs.m31,
+            m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + rhs.m32,
+            scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return xform<T>(
+            // row 0
+            m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20,
+            m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21,
+            m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22,
+            m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03,
+            // row 1
+            m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20,
+            m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21,
+            m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22,
+            m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13,
+            // row 2
+            m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20,
+            m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21,
+            m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22,
+            m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23,
+            // row 3
+            scalar<T>::ZERO,
+            scalar<T>::ZERO,
+            scalar<T>::ZERO,
+            scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    vector4<T> xform<T>::operator*(const vector4<T>& rhs) const
     {
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return vector4<T>(m00 * rhs.x + m10 * rhs.y + m20 * rhs.z + m30 * rhs.w,
@@ -136,7 +173,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::operator*=(const matrix4x4<T>& rhs)
+    xform<T>& xform<T>::operator*=(const xform<T>& rhs)
     {
         // row 0
         T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30;
@@ -168,135 +205,59 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::operator*(const xform<T>& rhs) const
+    matrix4x4<T> xform<T>::operator*(const matrix4x4<T>& rhs) const
     {
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
-            // row 0
-            m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30,
-            m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31,
-            m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32,
-            m03,
-            // row 1
-            m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30,
-            m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31,
-            m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32,
-            m13,
-            // row 2
-            m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30,
-            m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31,
-            m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32,
-            m23,
-            // row 3
-            m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30,
-            m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31,
-            m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32,
-            m33
-            );
-#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         return matrix4x4<T>(
             // row 0
             m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20,
             m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21,
             m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22,
-            m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03,
+            m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23,
             // row 1
             m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20,
             m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21,
             m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22,
-            m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13,
+            m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23,
             // row 2
             m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20,
             m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21,
             m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22,
-            m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23,
+            m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23,
             // row 3
-            m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20,
-            m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21,
-            m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22,
-            m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33
+            m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + rhs.m30,
+            m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + rhs.m31,
+            m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + rhs.m32,
+            m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + rhs.m33
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            // row 0
+            m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30,
+            m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31,
+            m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32,
+            m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03 * rhs.m33,
+            // row 1
+            m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30,
+            m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31,
+            m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32,
+            m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13 * rhs.m33,
+            // row 2
+            m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30,
+            m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31,
+            m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32,
+            m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23 * rhs.m33,
+            // row 3
+            rhs.m30,
+            rhs.m31,
+            rhs.m32,
+            rhs.m33
             );
 #endif // AUL_USE_COORDINATE_HANDEDNESS
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::operator*=(const xform<T>& rhs)
-    {
-#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        // row 0
-        T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30;
-        T t01 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31;
-        T t02 = m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32;
-        T t03 = m03;
-        // row 1
-        T t10 = m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30;
-        T t11 = m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31;
-        T t12 = m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32;
-        T t13 = m13;
-        // row 2
-        T t20 = m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30;
-        T t21 = m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31;
-        T t22 = m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32;
-        T t23 = m23;
-        // row 3
-        T t30 = m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30;
-        T t31 = m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31;
-        T t32 = m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32;
-        T t33 = m33;
-#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        // row 0
-        T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20;
-        T t01 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21;
-        T t02 = m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22;
-        T t03 = m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03;
-        // row 1
-        T t10 = m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20;
-        T t11 = m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21;
-        T t12 = m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22;
-        T t13 = m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13;
-        // row 2
-        T t20 = m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20;
-        T t21 = m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21;
-        T t22 = m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22;
-        T t23 = m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23;
-        // row 3
-        T t30 = m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20;
-        T t31 = m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21;
-        T t32 = m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22;
-        T t33 = m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33;
-#endif // AUL_USE_COORDINATE_HANDEDNESS
-
-        m00 = t00; m01 = t01; m02 = t02; m03 = t03;
-        m10 = t10; m11 = t11; m12 = t12; m13 = t13;
-        m20 = t20; m21 = t21; m22 = t22; m23 = t23;
-        m30 = t30; m31 = t31; m32 = t32; m33 = t33;
-
-        return *this;
-    }
-
-    template<typename T>
-    matrix4x4<T>& matrix4x4<T>::transpose()
-    {
-        std::swap(m01, m10);
-        std::swap(m02, m20);
-        std::swap(m03, m30);
-        std::swap(m12, m21);
-        std::swap(m13, m31);
-        std::swap(m23, m32);
-        return *this;
-    }
-
-    template<typename T>
-    matrix4x4<T> matrix4x4<T>::transposed() const
-    {
-        return matrix4x4<T>(m00, m10, m20, m30,
-            m01, m11, m21, m31,
-            m02, m12, m22, m32,
-            m03, m13, m23, m33);
-    }
-
-    template<typename T>
-    vector3<T> matrix4x4<T>::transform_point(const vector3<T>& point) const
+    vector3<T> xform<T>::transform_point(const vector3<T>& point) const
     {
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return vector3<T>(m00 * point.x + m10 * point.y + m20 * point.z + m30,
@@ -310,7 +271,7 @@ namespace aul
     }
 
     template<typename T>
-    vector3<T> matrix4x4<T>::transform_vector(const vector3<T>& vec) const
+    vector3<T> xform<T>::transform_vector(const vector3<T>& vec) const
     {
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return vector3<T>(m00 * vec.x + m10 * vec.y + m20 * vec.z,
@@ -324,7 +285,7 @@ namespace aul
     }
 
     template<typename T>
-    T matrix4x4<T>::determinant() const
+    T xform<T>::determinant() const
     {
         T det0 = m11 * (m22 * m33 - m23 * m32) - m12 * (m21 * m33 - m23 * m31) + m13 * (m21 * m32 - m22 * m31);
         T det1 = m10 * (m22 * m33 - m23 * m32) - m12 * (m20 * m33 - m23 * m30) + m13 * (m20 * m32 - m22 * m30);
@@ -335,7 +296,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::inverse() const
+    xform<T> xform<T>::inverse() const
     {
         vector3<T> a(x.xyz.cross(y.xyz));
         vector3<T> b(z.xyz.cross(w.xyz));
@@ -354,7 +315,7 @@ namespace aul
         vector3<T> c2 = w.xyz.cross(c) + a * w.w;
         vector3<T> c3 = c.cross(z.xyz) - a * z.w;
 
-        return matrix4x4<T>(
+        return xform<T>(
             c0.x, c1.x, c2.x, c3.x,
             c0.y, c1.y, c2.y, c3.y,
             c0.z, c1.z, c2.z, c3.z,
@@ -366,7 +327,7 @@ namespace aul
         vector3<T> r2 = w.xyz.cross(c) + a * w.w;
         vector3<T> r3 = c.cross(z.xyz) - a * z.w;
 
-        return matrix4x4<T>(
+        return xform<T>(
             r0.x, r0.y, r0.z, -(y.xyz.dot(b)),
             r1.x, r1.y, r1.z, x.xyz.dot(b),
             r2.x, r2.y, r2.z, -(w.xyz.dot(a)),
@@ -376,7 +337,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::invert()
+    xform<T>& xform<T>::invert()
     {
         vector3<T> a(x.xyz.cross(y.xyz));
         vector3<T> b(z.xyz.cross(w.xyz));
@@ -417,7 +378,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_scale(T scale, const vector3<T>& axis)
+    xform<T> xform<T>::make_scale(T scale, const vector3<T>& axis)
     {
         scale -= scalar<T>::ONE;
         T axis_x = axis.x * scale;
@@ -427,7 +388,7 @@ namespace aul
         T axis_xz = axis_x * axis.z;
         T axis_yz = axis_y * axis.z;
 
-        return matrix4x4<T>(
+        return xform<T>(
             axis_x * axis.x + scalar<T>::ONE, axis_xy, axis_xz, scalar<T>::ZERO,
             axis_xy, axis_y * axis.y + scalar<T>::ONE, axis_yz, scalar<T>::ZERO,
             axis_xz, axis_yz, axis_z * axis.z + scalar<T>::ONE, scalar<T>::ZERO,
@@ -436,17 +397,17 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_translation(T x_, T y_, T z_)
+    xform<T> xform<T>::make_translation(T x_, T y_, T z_)
     {
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
             x_, y_, z_, scalar<T>::ONE
             );
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, x_,
             scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, y_,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, z_,
@@ -456,17 +417,17 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_translation(const vector3<T>& translation)
+    xform<T> xform<T>::make_translation(const vector3<T>& translation)
     {
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
             translation.x, translation.y, translation.z, scalar<T>::ONE
             );
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, translation.x,
             scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, translation.y,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, translation.z,
@@ -476,7 +437,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_skew(T radians, const vector3<T>& skew_axis, const vector3<T>& normal_axis)
+    xform<T> xform<T>::make_skew(T radians, const vector3<T>& skew_axis, const vector3<T>& normal_axis)
     {
         T tan_rad = tan(radians);
         T axis_x = skew_axis.x * tan_rad;
@@ -484,14 +445,14 @@ namespace aul
         T axis_z = skew_axis.z * tan_rad;
 
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             axis_x * normal_axis.x + scalar<T>::ONE, axis_y * normal_axis.x, axis_z * normal_axis.x, scalar<T>::ZERO,
             axis_x * normal_axis.y, axis_y * normal_axis.y + scalar<T>::ONE, axis_z * normal_axis.y, scalar<T>::ZERO,
             axis_x * normal_axis.z, axis_y * normal_axis.z, axis_z * normal_axis.z + scalar<T>::ONE, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
             );
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             axis_x * normal_axis.x + scalar<T>::ONE, axis_x * normal_axis.y, axis_x * normal_axis.z, scalar<T>::ZERO,
             axis_y * normal_axis.x, axis_y * normal_axis.y + scalar<T>::ONE, axis_y * normal_axis.z, scalar<T>::ZERO,
             axis_z * normal_axis.x, axis_z * normal_axis.y, axis_z * normal_axis.z + scalar<T>::ONE, scalar<T>::ZERO,
@@ -501,20 +462,20 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_x(T radians)
+    xform<T> xform<T>::make_rotation_x(T radians)
     {
         T sin_rad = sin(radians);
         T cos_rad = cos(radians);
 
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, cos_rad, sin_rad, scalar<T>::ZERO,
             scalar<T>::ZERO, -sin_rad, cos_rad, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
             );
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, cos_rad, -sin_rad, scalar<T>::ZERO,
             scalar<T>::ZERO, sin_rad, cos_rad, scalar<T>::ZERO,
@@ -524,20 +485,20 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_y(T radians)
+    xform<T> xform<T>::make_rotation_y(T radians)
     {
         T sin_rad = sin(radians);
         T cos_rad = cos(radians);
 
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             cos_rad, scalar<T>::ZERO, -sin_rad, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
             sin_rad, scalar<T>::ZERO, cos_rad, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
             );
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             cos_rad, scalar<T>::ZERO, sin_rad, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
             -sin_rad, scalar<T>::ZERO, cos_rad, scalar<T>::ZERO,
@@ -547,20 +508,20 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_z(T radians)
+    xform<T> xform<T>::make_rotation_z(T radians)
     {
         T sin_rad = sin(radians);
         T cos_rad = cos(radians);
 
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             cos_rad, sin_rad, scalar<T>::ZERO, scalar<T>::ZERO,
             -sin_rad, cos_rad, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
             );
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             cos_rad, -sin_rad, scalar<T>::ZERO, scalar<T>::ZERO,
             sin_rad, cos_rad, scalar<T>::ZERO, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
@@ -570,19 +531,19 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_xyz(T radians_x, T radians_y, T radians_z)
+    xform<T> xform<T>::make_rotation_xyz(T radians_x, T radians_y, T radians_z)
     {
         return make_rotation_x(radians_x) * make_rotation_y(radians_y) * make_rotation_z(radians_z);
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_xyz(const vector3<T>& radians_xyz)
+    xform<T> xform<T>::make_rotation_xyz(const vector3<T>& radians_xyz)
     {
         return make_rotation_x(radians_xyz.x) * make_rotation_y(radians_xyz.y) * make_rotation_z(radians_xyz.z);
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
+    xform<T> xform<T>::make_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
         return make_rotation_y(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_z(radians_roll);
@@ -596,7 +557,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_ypr(const vector3<T>& radians_ypr)
+    xform<T> xform<T>::make_rotation_ypr(const vector3<T>& radians_ypr)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
         return make_rotation_y(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.roll);
@@ -610,7 +571,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_rotation_angle_axis(T radians, const vector3<T>& axis)
+    xform<T> xform<T>::make_rotation_angle_axis(T radians, const vector3<T>& axis)
     {
         T cos_rad = cos(radians);
         T sin_rad = sin(radians);
@@ -623,14 +584,14 @@ namespace aul
         T axis_yz = axis_y * axis.z;
 
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             cos_rad + axis_x * axis.x, axis_xy + sin_rad * axis.z, axis_xz - sin_rad * axis.y, scalar<T>::ZERO,
             axis_xy - sin_rad * axis.z, cos_rad + axis_y * axis.y, axis_yz + sin_rad * axis.x, scalar<T>::ZERO,
             axis_xz + sin_rad * axis.y, axis_yz - sin_rad * axis.x, cos_rad + axis_z * axis.z, scalar<T>::ZERO,
             scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
             );
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
-        return matrix4x4<T>(
+        return xform<T>(
             cos_rad + axis_x * axis.x, axis_xy - sin_rad * axis.z, axis_xz + sin_rad * axis.y, scalar<T>::ZERO,
             axis_xy + sin_rad * axis.z, cos_rad + axis_y * axis.y, axis_yz - sin_rad * axis.x, scalar<T>::ZERO,
             axis_xz - sin_rad * axis.y, axis_yz + sin_rad * axis.x, cos_rad + axis_z * axis.z, scalar<T>::ZERO,
@@ -640,7 +601,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_reflection(const vector3<T>& normal)
+    xform<T> xform<T>::make_reflection(const vector3<T>& normal)
     {
         T normal_x = normal.x * -scalar<T>::TWO;
         T normal_y = normal.y * -scalar<T>::TWO;
@@ -649,7 +610,7 @@ namespace aul
         T normal_xz = normal_x * normal.z;
         T normal_yz = normal_y * normal.z;
 
-        return matrix4x4<T>(
+        return xform<T>(
             normal_x * normal.x + scalar<T>::ONE, normal_xy, normal_xz, scalar<T>::ZERO,
             normal_xy, normal_y * normal.y + scalar<T>::ONE, normal_yz, scalar<T>::ZERO,
             normal_xz, normal_yz, normal_z * normal.z + scalar<T>::ONE, scalar<T>::ZERO,
@@ -658,7 +619,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T> matrix4x4<T>::make_involution(const vector3<T>& vec)
+    xform<T> xform<T>::make_involution(const vector3<T>& vec)
     {
         T vec_x = vec.x * scalar<T>::TWO;
         T vec_y = vec.y * scalar<T>::TWO;
@@ -667,7 +628,7 @@ namespace aul
         T vec_xz = vec_x * vec.z;
         T vec_yz = vec_y * vec.z;
 
-        return matrix4x4<T>(
+        return xform<T>(
             vec_x * vec.x - scalar<T>::ONE, vec_xy, vec_xz, scalar<T>::ZERO,
             vec_xy, vec_y * vec.y - scalar<T>::ONE, vec_yz, scalar<T>::ZERO,
             vec_xz, vec_yz, vec_z * vec.z - scalar<T>::ONE, scalar<T>::ZERO,
@@ -676,7 +637,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_uniform_scale(T scale)
+    xform<T>& xform<T>::to_uniform_scale(T scale)
     {
         m00 = m11 = m22 = scale;
         m33 = scalar<T>::ONE;
@@ -685,7 +646,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_scale(T scale_x, T scale_y, T scale_z)
+    xform<T>& xform<T>::to_scale(T scale_x, T scale_y, T scale_z)
     {
         m00 = scale_x;
         m11 = scale_y;
@@ -696,7 +657,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_scale(const vector3<T>& scale)
+    xform<T>& xform<T>::to_scale(const vector3<T>& scale)
     {
         m00 = scale.x;
         m11 = scale.y;
@@ -707,7 +668,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_scale(T scale, const vector3<T>& axis)
+    xform<T>& xform<T>::to_scale(T scale, const vector3<T>& axis)
     {
         scale -= scalar<T>::ONE;
         T axis_x = axis.x * scale;
@@ -725,7 +686,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_translation(T x_, T y_, T z_)
+    xform<T>& xform<T>::to_translation(T x_, T y_, T z_)
     {
         x = vector3<T>::X_AXIS;
         y = vector3<T>::Y_AXIS;
@@ -738,7 +699,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_translation(const vector3<T>& translation)
+    xform<T>& xform<T>::to_translation(const vector3<T>& translation)
     {
         x = vector3<T>::X_AXIS;
         y = vector3<T>::Y_AXIS;
@@ -749,7 +710,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_skew(T radians, const vector3<T>& skew_axis, const vector3<T>& normal_axis)
+    xform<T>& xform<T>::to_skew(T radians, const vector3<T>& skew_axis, const vector3<T>& normal_axis)
     {
         T tan_rad = tan(radians);
         T axis_x = skew_axis.x * tan_rad;
@@ -772,7 +733,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_x(T radians)
+    xform<T>& xform<T>::to_rotation_x(T radians)
     {
         T sin_rad = sin(radians);
         T cos_rad = cos(radians);
@@ -793,7 +754,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_y(T radians)
+    xform<T>& xform<T>::to_rotation_y(T radians)
     {
         T sin_rad = sin(radians);
         T cos_rad = cos(radians);
@@ -814,7 +775,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_z(T radians)
+    xform<T>& xform<T>::to_rotation_z(T radians)
     {
         T sin_rad = sin(radians);
         T cos_rad = cos(radians);
@@ -835,19 +796,19 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_xyz(T radians_x, T radians_y, T radians_z)
+    xform<T>& xform<T>::to_rotation_xyz(T radians_x, T radians_y, T radians_z)
     {
         return *this = make_rotation_x(radians_x) * make_rotation_y(radians_y) * make_rotation_z(radians_z);
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_xyz(const vector3<T>& radians_xyz)
+    xform<T>& xform<T>::to_rotation_xyz(const vector3<T>& radians_xyz)
     {
         return *this = make_rotation_x(radians_xyz.x) * make_rotation_y(radians_xyz.y) * make_rotation_z(radians_xyz.z);
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
+    xform<T>& xform<T>::to_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
         return *this = make_rotation_y(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_z(radians_roll);
@@ -861,7 +822,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_ypr(vector3<T>& radians_ypr)
+    xform<T>& xform<T>::to_rotation_ypr(vector3<T>& radians_ypr)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
         return *this = make_rotation_y(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.roll);
@@ -875,7 +836,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_rotation_angle_axis(T radians, const vector3<T>& axis)
+    xform<T>& xform<T>::to_rotation_angle_axis(T radians, const vector3<T>& axis)
     {
         T cos_rad = cos(radians);
         T sin_rad = sin(radians);
@@ -903,7 +864,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_reflection(const vector3<T>& normal)
+    xform<T>& xform<T>::to_reflection(const vector3<T>& normal)
     {
         T normal_x = normal.x * -scalar<T>::TWO;
         T normal_y = normal.y * -scalar<T>::TWO;
@@ -921,7 +882,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>& matrix4x4<T>::to_involution(const vector3<T>& vec)
+    xform<T>& xform<T>::to_involution(const vector3<T>& vec)
     {
         T vec_x = vec.x * scalar<T>::TWO;
         T vec_y = vec.y * scalar<T>::TWO;
@@ -939,7 +900,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>::operator wide_string() const
+    xform<T>::operator wide_string() const
     {
         wide_stringstream stream;
         stream << *this;
@@ -947,7 +908,7 @@ namespace aul
     }
 
     template<typename T>
-    wide_ostream& operator<<(wide_ostream& out, const matrix4x4<T>& mat)
+    wide_ostream& operator<<(wide_ostream& out, const xform<T>& mat)
     {
 #if AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
         out << L"[" << mat.m00 << L", " << mat.m01 << L", " << mat.m02 << L", " << mat.m03 << L"]\n"
@@ -961,7 +922,7 @@ namespace aul
     }
 
     template<typename T>
-    matrix4x4<T>::operator mb_string() const
+    xform<T>::operator mb_string() const
     {
         mb_stringstream stream;
         stream << *this;
@@ -969,7 +930,7 @@ namespace aul
     }
 
     template<typename T>
-    mb_ostream& operator<<(mb_ostream& out, const matrix4x4<T>& mat)
+    mb_ostream& operator<<(mb_ostream& out, const xform<T>& mat)
     {
 #if AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
         out << "[" << mat.m00 << ", " << mat.m01 << ", " << mat.m02 << ", " << mat.m03 << "]\n"
@@ -989,7 +950,7 @@ namespace aul
     //////////////////////////////////////////////////////////////////////////
 
 #define AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, U) template<> \
-matrix4x4<T>& convert<matrix4x4<T>, matrix4x4<U>>(matrix4x4<T>& to, const matrix4x4<U>& from) \
+xform<T>& convert<xform<T>, xform<U>>(xform<T>& to, const xform<U>& from) \
 { \
 to.m00 = (T)from.m00; to.m01 = (T)from.m01; to.m02 = (T)from.m02; to.m03 = (T)from.m03; \
 to.m10 = (T)from.m10; to.m11 = (T)from.m11; to.m12 = (T)from.m12; to.m13 = (T)from.m13; \

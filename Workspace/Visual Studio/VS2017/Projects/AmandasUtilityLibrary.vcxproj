@@ -53,6 +53,7 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector3.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector4.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\vector_math.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\xform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp" />
@@ -80,6 +81,7 @@
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector2.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector3.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\vector4.cpp" />
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\xform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\..\AmandasUtilityLibrary\ReadMe.txt" />

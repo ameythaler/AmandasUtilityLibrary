@@ -169,6 +169,9 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\matrix4x4.h">
       <Filter>Public\Headers\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\xform.h">
+      <Filter>Public\Headers\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\stdafx.cpp">
@@ -229,6 +232,9 @@
       <Filter>Private\Source\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\matrix4x4.cpp">
+      <Filter>Private\Source\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\xform.cpp">
       <Filter>Private\Source\Math</Filter>
     </ClCompile>
   </ItemGroup>

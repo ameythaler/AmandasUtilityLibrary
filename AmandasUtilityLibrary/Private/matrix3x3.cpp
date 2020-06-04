@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <aul/matrix3x3.h>
 #include <aul/matrix4x4.h>
+#include <aul/xform.h>
 
 namespace aul
 {
@@ -37,6 +38,14 @@ namespace aul
     }
 
     template<typename T>
+    matrix3x3<T>::matrix3x3(const xform<T>& rhs)
+        : x(rhs.x.xyz)
+        , y(rhs.y.xyz)
+        , z(rhs.z.xyz)
+    {
+    }
+
+    template<typename T>
     matrix3x3<T>& matrix3x3<T>::operator=(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 9);
@@ -55,6 +64,15 @@ namespace aul
 
     template<typename T>
     matrix3x3<T>& matrix3x3<T>::operator=(const matrix4x4<T>& rhs)
+    {
+        x = rhs.x.xyz;
+        y = rhs.y.xyz;
+        z = rhs.z.xyz;
+        return *this;
+    }
+
+    template<typename T>
+    matrix3x3<T>& matrix3x3<T>::operator=(const xform<T>& rhs)
     {
         x = rhs.x.xyz;
         y = rhs.y.xyz;
