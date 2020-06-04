@@ -1,0 +1,857 @@
+#include "stdafx.h"
+#include <aul/matrix4x4.h>
+#include <aul/matrix3x3.h>
+
+namespace aul
+{
+#define AUL_INTERNAL_ZERO_NON_DIAGONAL() m01 = m02 = m03 = m10 = m12 = m13 = m20 = m21 = m23 = m30 = m31 = m32 = scalar<T>::ZERO
+
+    template<typename T>
+    const matrix4x4<T> matrix4x4<T>::ZERO = matrix4x4<T>(vector4<T>::ZERO, vector4<T>::ZERO, vector4<T>::ZERO, vector4<T>::ZERO);
+
+    template<typename T>
+    const matrix4x4<T> matrix4x4<T>::IDENTITY = matrix4x4<T>(vector4<T>::ONE);
+
+    template<typename T>
+    const matrix4x4<T> matrix4x4<T>::NEGATIVE_IDENTITY = matrix4x4<T>(-vector4<T>::ONE);
+
+#define AUL_INTERNAL_EXPLICIT_INST_DEF(T) template struct matrix4x4<T>
+
+    AUL_INTERNAL_EXPLICIT_INST_DEF(float);
+    AUL_INTERNAL_EXPLICIT_INST_DEF(double);
+
+#undef AUL_INTERNAL_EXPLICIT_INST_DEF
+
+    template<typename T>
+    matrix4x4<T>::matrix4x4(const T* arr_data)
+    {
+        memcpy(data, arr_data, sizeof(T) * 16);
+    }
+
+    template<typename T>
+    matrix4x4<T>::matrix4x4(const matrix3x3<T>& rhs)
+        : m00(rhs.m00), m01(rhs.m01), m02(rhs.m02), m03(scalar<T>::ZERO)
+        , m10(rhs.m10), m11(rhs.m11), m12(rhs.m12), m13(scalar<T>::ZERO)
+        , m20(rhs.m20), m21(rhs.m21), m22(rhs.m22), m23(scalar<T>::ZERO)
+        , m30(scalar<T>::ZERO), m31(scalar<T>::ZERO), m32(scalar<T>::ZERO), m33(scalar<T>::ONE)
+    { }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::operator=(const T* arr_data)
+    {
+        memcpy(data, arr_data, sizeof(T) * 16);
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::operator=(const vector4<T>& diagonal)
+    {
+        m00 = diagonal.x;
+        m11 = diagonal.y;
+        m22 = diagonal.z;
+        m33 = diagonal.w;
+        AUL_INTERNAL_ZERO_NON_DIAGONAL();
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::operator=(const vector3<T>& diagonal)
+    {
+        m00 = diagonal.x;
+        m11 = diagonal.y;
+        m22 = diagonal.z;
+        m33 = scalar<T>::ONE;
+        AUL_INTERNAL_ZERO_NON_DIAGONAL();
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::operator=(const matrix3x3<T>& rhs)
+    {
+        x.xyz = rhs.x;
+        y.xyz = rhs.y;
+        z.xyz = rhs.z;
+        w = vector4<T>::W_AXIS;
+        x.w = y.w = z.w = scalar<T>::ZERO;
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::operator*(const matrix4x4<T>& rhs) const
+    {
+        return matrix4x4<T>(
+            // row 0
+            m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30,
+            m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31,
+            m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32,
+            m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03 * rhs.m33,
+            // row 1
+            m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30,
+            m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31,
+            m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32,
+            m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13 * rhs.m33,
+            // row 2
+            m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30,
+            m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31,
+            m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32,
+            m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23 * rhs.m33,
+            // row 3
+            m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30,
+            m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31,
+            m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32,
+            m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33 * rhs.m33
+            );
+    }
+
+    template<typename T>
+    vector4<T> matrix4x4<T>::operator*(const vector4<T>& rhs) const
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return vector4<T>(m00 * rhs.x + m10 * rhs.y + m20 * rhs.z + m30 * rhs.w,
+            m01 * rhs.x + m11 * rhs.y + m21 * rhs.z + m31 * rhs.w,
+            m02 * rhs.x + m12 * rhs.y + m22 * rhs.z + m32 * rhs.w,
+            m03 * rhs.x + m13 * rhs.y + m23 * rhs.z + m33 * rhs.w);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return vector4<T>(m00 * rhs.x + m01 * rhs.y + m02 * rhs.z + m03 * rhs.w,
+            m10 * rhs.x + m11 * rhs.y + m12 * rhs.z + m13 * rhs.w,
+            m20 * rhs.x + m21 * rhs.y + m22 * rhs.z + m23 * rhs.w,
+            m30 * rhs.x + m31 * rhs.y + m32 * rhs.z + m33 * rhs.w);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::operator*=(const matrix4x4<T>& rhs)
+    {
+        // row 0
+        T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30;
+        T t01 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31;
+        T t02 = m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32;
+        T t03 = m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03 * rhs.m33;
+        // row 1
+        T t10 = m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30;
+        T t11 = m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31;
+        T t12 = m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32;
+        T t13 = m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13 * rhs.m33;
+        // row 2
+        T t20 = m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30;
+        T t21 = m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31;
+        T t22 = m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32;
+        T t23 = m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23 * rhs.m33;
+        // row 3
+        T t30 = m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30;
+        T t31 = m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31;
+        T t32 = m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32;
+        T t33 = m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33 * rhs.m33;
+
+        m00 = t00; m01 = t01; m02 = t02; m03 = t03;
+        m10 = t10; m11 = t11; m12 = t12; m13 = t13;
+        m20 = t20; m21 = t21; m22 = t22; m23 = t23;
+        m30 = t30; m31 = t31; m32 = t32; m33 = t33;
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::transpose()
+    {
+        std::swap(m01, m10);
+        std::swap(m02, m20);
+        std::swap(m03, m30);
+        std::swap(m12, m21);
+        std::swap(m13, m31);
+        std::swap(m23, m32);
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::transposed() const
+    {
+        return matrix4x4<T>(m00, m10, m20, m30,
+            m01, m11, m21, m31,
+            m02, m12, m22, m32,
+            m03, m13, m23, m33);
+    }
+
+    template<typename T>
+    T matrix4x4<T>::determinant() const
+    {
+        T det0 = m11 * (m22 * m33 - m23 * m32) - m12 * (m21 * m33 - m23 * m31) + m13 * (m21 * m32 - m22 * m31);
+        T det1 = m10 * (m22 * m33 - m23 * m32) - m12 * (m20 * m33 - m23 * m30) + m13 * (m20 * m32 - m22 * m30);
+        T det2 = m10 * (m21 * m33 - m23 * m31) - m11 * (m20 * m33 - m23 * m30) + m13 * (m20 * m31 - m21 * m30);
+        T det3 = m10 * (m21 * m32 - m22 * m31) - m11 * (m20 * m32 - m22 * m30) + m12 * (m20 * m31 - m21 * m30);
+
+        return m00 * det0 - m01 * det1 + m02 * det2 - m03 * det3;
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::inverse() const
+    {
+        vector3<T> a(x.xyz.cross(y.xyz));
+        vector3<T> b(z.xyz.cross(w.xyz));
+        vector3<T> c(x.xyz * y.w - y.xyz * x.w);
+        vector3<T> d(z.xyz * w.w - w.xyz * z.w);
+
+        T inv_det = scalar<T>::ONE / (a.dot(d) + b.dot(c));
+        a *= inv_det;
+        b *= inv_det;
+        c *= inv_det;
+        d *= inv_det;
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        vector3<T> c0 = y.xyz.cross(d) + b * y.w;
+        vector3<T> c1 = d.cross(x.xyz) - b * x.w;
+        vector3<T> c2 = w.xyz.cross(c) + a * w.w;
+        vector3<T> c3 = c.cross(z.xyz) - a * z.w;
+
+        return matrix4x4<T>(
+            c0.x, c1.x, c2.x, c3.x,
+            c0.y, c1.y, c2.y, c3.y,
+            c0.z, c1.z, c2.z, c3.z,
+            -(y.xyz.dot(b)), x.xyz.dot(b), -(w.xyz.dot(a)), z.xyz.dot(a)
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        vector3<T> r0 = y.xyz.cross(d) + b * y.w;
+        vector3<T> r1 = d.cross(x.xyz) - b * x.w;
+        vector3<T> r2 = w.xyz.cross(c) + a * w.w;
+        vector3<T> r3 = c.cross(z.xyz) - a * z.w;
+
+        return matrix4x4<T>(
+            r0.x, r0.y, r0.z, -(y.xyz.dot(b)),
+            r1.x, r1.y, r1.z, x.xyz.dot(b),
+            r2.x, r2.y, r2.z, -(w.xyz.dot(a)),
+            r3.x, r3.y, r3.z, z.xyz.dot(a)
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::invert()
+    {
+        vector3<T> a(x.xyz.cross(y.xyz));
+        vector3<T> b(z.xyz.cross(w.xyz));
+        vector3<T> c(x.xyz * y.w - y.xyz * x.w);
+        vector3<T> d(z.xyz * w.w - w.xyz * z.w);
+
+        T inv_det = scalar<T>::ONE / (a.dot(d) + b.dot(c));
+        a *= inv_det;
+        b *= inv_det;
+        c *= inv_det;
+        d *= inv_det;
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        vector3<T> c0 = y.xyz.cross(d) + b * y.w;
+        vector3<T> c1 = d.cross(x.xyz) - b * x.w;
+        vector3<T> c2 = w.xyz.cross(c) + a * w.w;
+        vector3<T> c3 = c.cross(z.xyz) - a * z.w;
+        vector4<T> t(-(y.xyz.dot(b)), x.xyz.dot(b), -(w.xyz.dot(a)), z.xyz.dot(a));
+
+        m00 = c0.x; m01 = c1.x; m02 = c2.x; m03 = c3.x;
+        m10 = c0.y; m11 = c1.y; m12 = c2.y; m13 = c3.y;
+        m20 = c0.z; m21 = c1.z; m22 = c2.z; m23 = c3.z;
+        m30 = t.x; m31 = t.y; m32 = t.z; m33 = t.w;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        vector3<T> r0 = y.xyz.cross(d) + b * y.w;
+        vector3<T> r1 = d.cross(x.xyz) - b * x.w;
+        vector3<T> r2 = w.xyz.cross(c) + a * w.w;
+        vector3<T> r3 = c.cross(z.xyz) - a * z.w;
+        vector4<T> t(-(y.xyz.dot(b)), x.xyz.dot(b), -(w.xyz.dot(a)), z.xyz.dot(a));
+
+        m00 = r0.x; m01 = r0.y; m02 = r0.z; m03 = t.x;
+        m10 = r1.x; m11 = r1.y; m12 = r1.z; m13 = t.y;
+        m20 = r2.x; m21 = r2.y; m22 = r2.z; m23 = t.z;
+        m30 = r3.x; m31 = r3.y; m32 = r3.z; m33 = t.w;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_scale(T scale, const vector3<T>& axis)
+    {
+        scale -= scalar<T>::ONE;
+        T axis_x = axis.x * scale;
+        T axis_y = axis.y * scale;
+        T axis_z = axis.z * scale;
+        T axis_xy = axis_x * axis.y;
+        T axis_xz = axis_x * axis.z;
+        T axis_yz = axis_y * axis.z;
+
+        return matrix4x4<T>(
+            axis_x * axis.x + scalar<T>::ONE, axis_xy, axis_xz, scalar<T>::ZERO,
+            axis_xy, axis_y * axis.y + scalar<T>::ONE, axis_yz, scalar<T>::ZERO,
+            axis_xz, axis_yz, axis_z * axis.z + scalar<T>::ONE, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_translation(T x_, T y_, T z_)
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
+            x_, y_, z_, scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, x_,
+            scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, y_,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, z_,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_translation(const vector3<T>& translation)
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
+            translation.x, translation.y, translation.z, scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, translation.x,
+            scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, translation.y,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, translation.z,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_skew(T radians, const vector3<T>& skew_axis, const vector3<T>& normal_axis)
+    {
+        T tan_rad = tan(radians);
+        T axis_x = skew_axis.x * tan_rad;
+        T axis_y = skew_axis.y * tan_rad;
+        T axis_z = skew_axis.z * tan_rad;
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            axis_x * normal_axis.x + scalar<T>::ONE, axis_y * normal_axis.x, axis_z * normal_axis.x, scalar<T>::ZERO,
+            axis_x * normal_axis.y, axis_y * normal_axis.y + scalar<T>::ONE, axis_z * normal_axis.y, scalar<T>::ZERO,
+            axis_x * normal_axis.z, axis_y * normal_axis.z, axis_z * normal_axis.z + scalar<T>::ONE, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            axis_x * normal_axis.x + scalar<T>::ONE, axis_x * normal_axis.y, axis_x * normal_axis.z, scalar<T>::ZERO,
+            axis_y * normal_axis.x, axis_y * normal_axis.y + scalar<T>::ONE, axis_y * normal_axis.z, scalar<T>::ZERO,
+            axis_z * normal_axis.x, axis_z * normal_axis.y, axis_z * normal_axis.z + scalar<T>::ONE, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_x(T radians)
+    {
+        T sin_rad = sin(radians);
+        T cos_rad = cos(radians);
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, cos_rad, sin_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, -sin_rad, cos_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, cos_rad, -sin_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, sin_rad, cos_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_y(T radians)
+    {
+        T sin_rad = sin(radians);
+        T cos_rad = cos(radians);
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            cos_rad, scalar<T>::ZERO, -sin_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
+            sin_rad, scalar<T>::ZERO, cos_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            cos_rad, scalar<T>::ZERO, sin_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO,
+            -sin_rad, scalar<T>::ZERO, cos_rad, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_z(T radians)
+    {
+        T sin_rad = sin(radians);
+        T cos_rad = cos(radians);
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            cos_rad, sin_rad, scalar<T>::ZERO, scalar<T>::ZERO,
+            -sin_rad, cos_rad, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            cos_rad, -sin_rad, scalar<T>::ZERO, scalar<T>::ZERO,
+            sin_rad, cos_rad, scalar<T>::ZERO, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_xyz(T radians_x, T radians_y, T radians_z)
+    {
+        return make_rotation_x(radians_x) * make_rotation_y(radians_y) * make_rotation_z(radians_z);
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_xyz(const vector3<T>& radians_xyz)
+    {
+        return make_rotation_x(radians_xyz.x) * make_rotation_y(radians_xyz.y) * make_rotation_z(radians_xyz.z);
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
+    {
+#if AUL_USE_UP_VECTOR == AUL_Y_UP
+        return make_rotation_y(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_z(radians_roll);
+#elif AUL_USE_UP_VECTOR == AUL_Z_UP
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return make_rotation_z(radians_yaw) * make_rotation_y(radians_pitch) * make_rotation_x(radians_roll);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return make_rotation_z(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_y(radians_roll);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+#endif // AUL_USE_UP_VECTOR
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_ypr(const vector3<T>& radians_ypr)
+    {
+#if AUL_USE_UP_VECTOR == AUL_Y_UP
+        return make_rotation_y(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.roll);
+#elif AUL_USE_UP_VECTOR == AUL_Z_UP
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return make_rotation_z(radians_ypr.yaw) * make_rotation_y(radians_ypr.pitch) * make_rotation_x(radians_ypr.roll);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return make_rotation_z(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_y(radians_ypr.roll);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+#endif // AUL_USE_UP_VECTOR
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_rotation_angle_axis(T radians, const vector3<T>& axis)
+    {
+        T cos_rad = cos(radians);
+        T sin_rad = sin(radians);
+        T one_minus_cos_rad = scalar<T>::ONE - cos_rad;
+        T axis_x = axis.x * one_minus_cos_rad;
+        T axis_y = axis.y * one_minus_cos_rad;
+        T axis_z = axis.z * one_minus_cos_rad;
+        T axis_xy = axis_x * axis.y;
+        T axis_xz = axis_x * axis.z;
+        T axis_yz = axis_y * axis.z;
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            cos_rad + axis_x * axis.x, axis_xy + sin_rad * axis.z, axis_xz - sin_rad * axis.y, scalar<T>::ZERO,
+            axis_xy - sin_rad * axis.z, cos_rad + axis_y * axis.y, axis_yz + sin_rad * axis.x, scalar<T>::ZERO,
+            axis_xz + sin_rad * axis.y, axis_yz - sin_rad * axis.x, cos_rad + axis_z * axis.z, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            cos_rad + axis_x * axis.x, axis_xy - sin_rad * axis.z, axis_xz + sin_rad * axis.y, scalar<T>::ZERO,
+            axis_xy + sin_rad * axis.z, cos_rad + axis_y * axis.y, axis_yz - sin_rad * axis.x, scalar<T>::ZERO,
+            axis_xz - sin_rad * axis.y, axis_yz + sin_rad * axis.x, cos_rad + axis_z * axis.z, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_reflection(const vector3<T>& normal)
+    {
+        T normal_x = normal.x * -scalar<T>::TWO;
+        T normal_y = normal.y * -scalar<T>::TWO;
+        T normal_z = normal.z * -scalar<T>::TWO;
+        T normal_xy = normal_x * normal.y;
+        T normal_xz = normal_x * normal.z;
+        T normal_yz = normal_y * normal.z;
+
+        return matrix4x4<T>(
+            normal_x * normal.x + scalar<T>::ONE, normal_xy, normal_xz, scalar<T>::ZERO,
+            normal_xy, normal_y * normal.y + scalar<T>::ONE, normal_yz, scalar<T>::ZERO,
+            normal_xz, normal_yz, normal_z * normal.z + scalar<T>::ONE, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+    }
+
+    template<typename T>
+    matrix4x4<T> matrix4x4<T>::make_involution(const vector3<T>& vec)
+    {
+        T vec_x = vec.x * scalar<T>::TWO;
+        T vec_y = vec.y * scalar<T>::TWO;
+        T vec_z = vec.z * scalar<T>::TWO;
+        T vec_xy = vec_x * vec.y;
+        T vec_xz = vec_x * vec.z;
+        T vec_yz = vec_y * vec.z;
+
+        return matrix4x4<T>(
+            vec_x * vec.x - scalar<T>::ONE, vec_xy, vec_xz, scalar<T>::ZERO,
+            vec_xy, vec_y * vec.y - scalar<T>::ONE, vec_yz, scalar<T>::ZERO,
+            vec_xz, vec_yz, vec_z * vec.z - scalar<T>::ONE, scalar<T>::ZERO,
+            scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE
+            );
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_uniform_scale(T scale)
+    {
+        m00 = m11 = m22 = scale;
+        m33 = scalar<T>::ONE;
+        AUL_INTERNAL_ZERO_NON_DIAGONAL();
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_scale(T scale_x, T scale_y, T scale_z)
+    {
+        m00 = scale_x;
+        m11 = scale_y;
+        m22 = scale_z;
+        m33 = scalar<T>::ONE;
+        AUL_INTERNAL_ZERO_NON_DIAGONAL();
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_scale(const vector3<T>& scale)
+    {
+        m00 = scale.x;
+        m11 = scale.y;
+        m22 = scale.z;
+        m33 = scalar<T>::ONE;
+        AUL_INTERNAL_ZERO_NON_DIAGONAL();
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_scale(T scale, const vector3<T>& axis)
+    {
+        scale -= scalar<T>::ONE;
+        T axis_x = axis.x * scale;
+        T axis_y = axis.y * scale;
+        T axis_z = axis.z * scale;
+        T axis_xy = axis_x * axis.y;
+        T axis_xz = axis_x * axis.z;
+        T axis_yz = axis_y * axis.z;
+
+        m00 = axis_x * axis.x + scalar<T>::ONE; m01 = axis_xy; m02 = axis_xz; m03 = scalar<T>::ZERO;
+        m10 = axis_xy; m11 = axis_y * axis.y + scalar<T>::ONE; m12 = axis_yz; m13 = scalar<T>::ZERO;
+        m20 = axis_xz; m21 = axis_yz; m22 = axis_z * axis.z + scalar<T>::ONE; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_translation(T x_, T y_, T z_)
+    {
+        x = vector3<T>::X_AXIS;
+        y = vector3<T>::Y_AXIS;
+        z = vector3<T>::Z_AXIS;
+        w.x = x_;
+        w.y = y_;
+        w.z = z_;
+        w.w = scalar<T>::ONE;
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_translation(const vector3<T>& translation)
+    {
+        x = vector3<T>::X_AXIS;
+        y = vector3<T>::Y_AXIS;
+        z = vector3<T>::Z_AXIS;
+        w.xyz = translation;
+        w.w = scalar<T>::ONE;
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_skew(T radians, const vector3<T>& skew_axis, const vector3<T>& normal_axis)
+    {
+        T tan_rad = tan(radians);
+        T axis_x = skew_axis.x * tan_rad;
+        T axis_y = skew_axis.y * tan_rad;
+        T axis_z = skew_axis.z * tan_rad;
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        m00 = axis_x * normal_axis.x + scalar<T>::ONE; m01 = axis_y * normal_axis.x; m02 = axis_z * normal_axis.x; m03 = scalar<T>::ZERO;
+        m10 = axis_x * normal_axis.y; m11 = axis_y * normal_axis.y + scalar<T>::ONE; m12 = axis_z * normal_axis.y; m13 = scalar<T>::ZERO;
+        m20 = axis_x * normal_axis.z; m21 = axis_y * normal_axis.z; m22 = axis_z * normal_axis.z + scalar<T>::ONE; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        m00 = axis_x * normal_axis.x + scalar<T>::ONE; m01 = axis_x * normal_axis.y; m02 = axis_x * normal_axis.z; m03 = scalar<T>::ZERO;
+        m10 = axis_y * normal_axis.x; m11 = axis_y * normal_axis.y + scalar<T>::ONE; m12 = axis_y * normal_axis.z; m13 = scalar<T>::ZERO;
+        m20 = axis_z * normal_axis.x; m21 = axis_z * normal_axis.y; m22 = axis_z * normal_axis.z + scalar<T>::ONE; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_x(T radians)
+    {
+        T sin_rad = sin(radians);
+        T cos_rad = cos(radians);
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        m00 = scalar<T>::ONE; m01 = scalar<T>::ZERO; m02 = scalar<T>::ZERO; m03 = scalar<T>::ZERO;
+        m10 = scalar<T>::ZERO; m11 = cos_rad; m12 = sin_rad; m13 = scalar<T>::ZERO;
+        m20 = scalar<T>::ZERO; m21 = -sin_rad; m22 = cos_rad; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        m00 = scalar<T>::ONE; m01 = scalar<T>::ZERO; m02 = scalar<T>::ZERO; m03 = scalar<T>::ZERO;
+        m10 = scalar<T>::ZERO; m11 = cos_rad; m12 = -sin_rad; m13 = scalar<T>::ZERO;
+        m20 = scalar<T>::ZERO; m21 = sin_rad; m22 = cos_rad; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_y(T radians)
+    {
+        T sin_rad = sin(radians);
+        T cos_rad = cos(radians);
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        m00 = cos_rad; m01 = scalar<T>::ZERO; m11 = -sin_rad; m03 = scalar<T>::ZERO;
+        m10 = scalar<T>::ZERO; m11 = scalar<T>::ONE; m12 = scalar<T>::ZERO; m13 = scalar<T>::ZERO;
+        m20 = sin_rad; m21 = scalar<T>::ZERO; m22 = cos_rad; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        m00 = cos_rad; m01 = scalar<T>::ZERO; m02 = sin_rad; m03 = scalar<T>::ZERO;
+        m10 = scalar<T>::ZERO; m11 = scalar<T>::ONE; m12 = scalar<T>::ZERO; m13 = scalar<T>::ZERO;
+        m20 = -sin_rad; m21 = scalar<T>::ZERO; m22 = cos_rad; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_z(T radians)
+    {
+        T sin_rad = sin(radians);
+        T cos_rad = cos(radians);
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        m00 = cos_rad; m01 = sin_rad; m02 = scalar<T>::ZERO; m03 = scalar<T>::ZERO;
+        m10 = -sin_rad; m11 = cos_rad; m12 = scalar<T>::ZERO; m13 = scalar<T>::ZERO;
+        m20 = scalar<T>::ZERO; m21 = scalar<T>::ZERO; m22 = scalar<T>::ONE; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        m00 = cos_rad; m01 = -sin_rad; m02 = scalar<T>::ZERO; m03 = scalar<T>::ZERO;
+        m10 = sin_rad; m11 = cos_rad; m12 = scalar<T>::ZERO; m13 = scalar<T>::ZERO;
+        m20 = scalar<T>::ZERO; m21 = scalar<T>::ZERO; m22 = scalar<T>::ONE; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_xyz(T radians_x, T radians_y, T radians_z)
+    {
+        return *this = make_rotation_x(radians_x) * make_rotation_y(radians_y) * make_rotation_z(radians_z);
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_xyz(const vector3<T>& radians_xyz)
+    {
+        return *this = make_rotation_x(radians_xyz.x) * make_rotation_y(radians_xyz.y) * make_rotation_z(radians_xyz.z);
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
+    {
+#if AUL_USE_UP_VECTOR == AUL_Y_UP
+        return *this = make_rotation_y(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_z(radians_roll);
+#elif AUL_USE_UP_VECTOR == AUL_Z_UP
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return *this = make_rotation_z(radians_yaw) * make_rotation_y(radians_pitch) * make_rotation_x(radians_roll);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return *this = make_rotation_z(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_y(radians_roll);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+#endif // AUL_USE_UP_VECTOR
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_ypr(vector3<T>& radians_ypr)
+    {
+#if AUL_USE_UP_VECTOR == AUL_Y_UP
+        return *this = make_rotation_y(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.roll);
+#elif AUL_USE_UP_VECTOR == AUL_Z_UP
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return *this = make_rotation_z(radians_ypr.yaw) * make_rotation_y(radians_ypr.pitch) * make_rotation_x(radians_ypr.roll);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return *this = make_rotation_z(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_y(radians_ypr.roll);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+#endif // AUL_USE_UP_VECTOR
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_rotation_angle_axis(T radians, const vector3<T>& axis)
+    {
+        T cos_rad = cos(radians);
+        T sin_rad = sin(radians);
+        T one_minus_cos_rad = scalar<T>::ONE - cos_rad;
+        T axis_x = axis.x * one_minus_cos_rad;
+        T axis_y = axis.y * one_minus_cos_rad;
+        T axis_z = axis.z * one_minus_cos_rad;
+        T axis_xy = axis_x * axis.y;
+        T axis_xz = axis_x * axis.z;
+        T axis_yz = axis_y * axis.z;
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        m00 = cos_rad + axis_x * axis.x; m01 = axis_xy + sin_rad * axis.z; m02 = axis_xz - sin_rad * axis.y; m03 = scalar<T>::ZERO;
+        m10 = axis_xy - sin_rad * axis.z; m11 = cos_rad + axis_y * axis.y; m12 = axis_yz + sin_rad * axis.x; m13 = scalar<T>::ZERO;
+        m20 = axis_xz + sin_rad * axis.y; m21 = axis_yz - sin_rad * axis.x; m22 = cos_rad + axis_z * axis.z; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        m00 = cos_rad + axis_x * axis.x; m01 = axis_xy - sin_rad * axis.z; m02 = axis_xz + sin_rad * axis.y; m03 = scalar<T>::ZERO;
+        m10 = axis_xy + sin_rad * axis.z; m11 = cos_rad + axis_y * axis.y; m12 = axis_yz - sin_rad * axis.x; m13 = scalar<T>::ZERO;
+        m20 = axis_xz - sin_rad * axis.y; m21 = axis_yz + sin_rad * axis.x; m22 = cos_rad + axis_z * axis.z; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_reflection(const vector3<T>& normal)
+    {
+        T normal_x = normal.x * -scalar<T>::TWO;
+        T normal_y = normal.y * -scalar<T>::TWO;
+        T normal_z = normal.z * -scalar<T>::TWO;
+        T normal_xy = normal_x * normal.y;
+        T normal_xz = normal_x * normal.z;
+        T normal_yz = normal_y * normal.z;
+
+        m00 = normal_x * normal.x + scalar<T>::ONE; m01 = normal_xy; m02 = normal_xz; m03 = scalar<T>::ZERO;
+        m10 = normal_xy; m11 = normal_y * normal.y + scalar<T>::ONE; m12 = normal_yz; m13 = scalar<T>::ZERO;
+        m20 = normal_xz; m21 = normal_yz; m22 = normal_z * normal.z + scalar<T>::ONE; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>& matrix4x4<T>::to_involution(const vector3<T>& vec)
+    {
+        T vec_x = vec.x * scalar<T>::TWO;
+        T vec_y = vec.y * scalar<T>::TWO;
+        T vec_z = vec.z * scalar<T>::TWO;
+        T vec_xy = vec_x * vec.y;
+        T vec_xz = vec_x * vec.z;
+        T vec_yz = vec_y * vec.z;
+
+        m00 = vec_x * vec.x - scalar<T>::ONE; m01 = vec_xy; m02 = vec_xz; m03 = scalar<T>::ZERO;
+        m10 = vec_xy; m11 = vec_y * vec.y - scalar<T>::ONE; m12 = vec_yz; m13 = scalar<T>::ZERO;
+        m20 = vec_xz; m21 = vec_yz; m22 = vec_z * vec.z - scalar<T>::ONE; m23 = scalar<T>::ZERO;
+        m30 = scalar<T>::ZERO; m31 = scalar<T>::ZERO; m32 = scalar<T>::ZERO; m33 = scalar<T>::ONE;
+
+        return *this;
+    }
+
+    template<typename T>
+    matrix4x4<T>::operator wide_string() const
+    {
+        wide_stringstream stream;
+        stream << *this;
+        return stream.str();
+    }
+
+    template<typename T>
+    wide_ostream& operator<<(wide_ostream& out, const matrix4x4<T>& mat)
+    {
+#if AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
+        out << L"[" << mat.m00 << L", " << mat.m01 << L", " << mat.m02 << L", " << mat.m03 << L"]\n"
+            << L"[" << mat.m10 << L", " << mat.m11 << L", " << mat.m12 << L", " << mat.m13 << L"]\n"
+            << L"[" << mat.m20 << L", " << mat.m21 << L", " << mat.m22 << L", " << mat.m23 << L"]\n"
+            << L"[" << mat.m30 << L", " << mat.m31 << L", " << mat.m32 << L", " << mat.m33 << L"]";
+#else // AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
+        out << L"[" << mat.x << L", " << mat.y << L", " << mat.z << L", " << mat.w << L"]";
+#endif // AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
+        return out;
+    }
+
+    template<typename T>
+    matrix4x4<T>::operator mb_string() const
+    {
+        mb_stringstream stream;
+        stream << *this;
+        return stream.str();
+    }
+
+    template<typename T>
+    mb_ostream& operator<<(mb_ostream& out, const matrix4x4<T>& mat)
+    {
+#if AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
+        out << "[" << mat.m00 << ", " << mat.m01 << ", " << mat.m02 << ", " << mat.m03 << "]\n"
+            << "[" << mat.m10 << ", " << mat.m11 << ", " << mat.m12 << ", " << mat.m13 << "]\n"
+            << "[" << mat.m20 << ", " << mat.m21 << ", " << mat.m22 << ", " << mat.m23 << "]\n"
+            << "[" << mat.m30 << ", " << mat.m31 << ", " << mat.m32 << ", " << mat.m33 << "]";
+#else // AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
+        out << "[" << mat.x << ", " << mat.y << ", " << mat.z << mat.w << "]";
+#endif // AUL_USE_MATRIX_MULTI_LINE_STRING_REPRESENTATION
+        return out;
+    }
+
+#undef AUL_INTERNAL_ZERO_NON_DIAGONAL
+
+    //////////////////////////////////////////////////////////////////////////
+    // Conversion
+    //////////////////////////////////////////////////////////////////////////
+
+#define AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, U) template<> \
+matrix4x4<T>& convert<matrix4x4<T>, matrix4x4<U>>(matrix4x4<T>& to, const matrix4x4<U>& from) \
+{ \
+to.m00 = (T)from.m00; to.m01 = (T)from.m01; to.m02 = (T)from.m02; to.m03 = (T)from.m03; \
+to.m10 = (T)from.m10; to.m11 = (T)from.m11; to.m12 = (T)from.m12; to.m13 = (T)from.m13; \
+to.m20 = (T)from.m20; to.m21 = (T)from.m21; to.m22 = (T)from.m22; to.m23 = (T)from.m23; \
+to.m30 = (T)from.m30; to.m31 = (T)from.m31; to.m32 = (T)from.m32; to.m33 = (T)from.m33; \
+return to; \
+}
+
+#define AUL_INTERNAL_CONVERT_DEF(T, U) AUL_INTERNAL_CONVERT_DEF_PARTIAL(T, U) \
+AUL_INTERNAL_CONVERT_DEF_PARTIAL(U, T)
+
+    AUL_INTERNAL_CONVERT_DEF(float, double);
+
+#undef AUL_INTERNAL_CONVERT_DEF
+#undef AUL_INTERNAL_CONVERT_DEF_PARTIAL
+}

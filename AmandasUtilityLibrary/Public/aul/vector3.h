@@ -57,7 +57,7 @@ namespace aul
             {
                 T u;
                 T v;
-                T s;
+                T w;
             };
             struct
             {

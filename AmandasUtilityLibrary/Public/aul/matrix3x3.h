@@ -7,6 +7,7 @@
 namespace aul
 {
     template<typename T> struct matrix3x3;
+    template<typename T> struct matrix4x4;
 
     template<typename T>
     wide_ostream& operator<< (wide_ostream& out, const matrix3x3<T>& mat);
@@ -97,8 +98,10 @@ namespace aul
             , m20(scalar<T>::ZERO), m21(scalar<T>::ZERO), m22(diagonal.z)
         { }
         matrix3x3(const T* arr_data);
+        matrix3x3(const matrix4x4<T>& rhs);
         matrix3x3& operator=(const T* arr_data);
         matrix3x3& operator=(const vector3<T>& diagonal);
+        matrix3x3& operator=(const matrix4x4<T>& rhs);
 
         inline bool operator==(const matrix3x3& rhs) const { return x == rhs.x && y == rhs.y && z == rhs.z; }
         inline bool operator!=(const matrix3x3& rhs) const { return x != rhs.x || y != rhs.y || z != rhs.z; }

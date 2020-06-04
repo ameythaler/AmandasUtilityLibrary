@@ -30,6 +30,7 @@
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\macros.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\matrix3x3.h" />
+    <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\matrix4x4.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\matrix_math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\scalar_math.h" />
     <ClInclude Include="..\..\..\..\AmandasUtilityLibrary\Public\aul\memstack.h" />
@@ -56,6 +57,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\date_time.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\matrix3x3.cpp" />
+    <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\matrix4x4.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\scalar_math.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\memstack.cpp" />
     <ClCompile Include="..\..\..\..\AmandasUtilityLibrary\Private\process.cpp" />

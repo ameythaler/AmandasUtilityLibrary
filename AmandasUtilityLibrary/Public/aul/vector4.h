@@ -63,19 +63,6 @@ namespace aul
                 T b;
 #endif // AUL_USE_VECTOR_COLOR_ALIAS
             };
-            struct
-            {
-                T u;
-                T v;
-                T s;
-                T t;
-            };
-            struct  
-            {
-                T yaw;
-                T pitch;
-                T roll;
-            };
             vector2<T> xy;
             vector3<T> xyz;
         };

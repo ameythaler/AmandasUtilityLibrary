@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <aul/matrix3x3.h>
+#include <aul/matrix4x4.h>
 
 namespace aul
 {
@@ -9,14 +10,10 @@ namespace aul
     const matrix3x3<T> matrix3x3<T>::ZERO = matrix3x3<T>(vector3<T>::ZERO, vector3<T>::ZERO, vector3<T>::ZERO);
 
     template<typename T>
-    const matrix3x3<T> matrix3x3<T>::IDENTITY = matrix3x3<T>(scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO
-        , scalar<T>::ZERO, scalar<T>::ONE, scalar<T>::ZERO
-        , scalar<T>::ZERO, scalar<T>::ZERO, scalar<T>::ONE);
+    const matrix3x3<T> matrix3x3<T>::IDENTITY = matrix3x3<T>(vector3<T>::ONE);
 
     template<typename T>
-    const matrix3x3<T> matrix3x3<T>::NEGATIVE_IDENTITY = matrix3x3<T>(-scalar<T>::ONE, scalar<T>::ZERO, scalar<T>::ZERO
-        , scalar<T>::ZERO, -scalar<T>::ONE, scalar<T>::ZERO
-        , scalar<T>::ZERO, scalar<T>::ZERO, -scalar<T>::ONE);
+    const matrix3x3<T> matrix3x3<T>::NEGATIVE_IDENTITY = matrix3x3<T>(-vector3<T>::ONE);
 
 #define AUL_INTERNAL_EXPLICIT_INST_DEF(T) template struct matrix3x3<T>
 
@@ -29,6 +26,14 @@ namespace aul
     matrix3x3<T>::matrix3x3(const T* arr_data)
     {
         memcpy(data, arr_data, sizeof(T) * 9);
+    }
+
+    template<typename T>
+    matrix3x3<T>::matrix3x3(const matrix4x4<T>& rhs)
+        : x(rhs.x.xyz)
+        , y(rhs.y.xyz)
+        , z(rhs.z.xyz)
+    {
     }
 
     template<typename T>
@@ -45,6 +50,15 @@ namespace aul
         m11 = diagonal.y;
         m22 = diagonal.z;
         AUL_INTERNAL_ZERO_NON_DIAGONAL();
+        return *this;
+    }
+
+    template<typename T>
+    matrix3x3<T>& matrix3x3<T>::operator=(const matrix4x4<T>& rhs)
+    {
+        x = rhs.x.xyz;
+        y = rhs.y.xyz;
+        z = rhs.z.xyz;
         return *this;
     }
 
