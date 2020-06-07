@@ -95,6 +95,9 @@ namespace aul
     template<typename T>
     matrix4x4<T> matrix4x4<T>::operator*(const matrix4x4<T>& rhs) const
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return matrix4x4<T>(
             // row 0
             m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30,
@@ -117,6 +120,82 @@ namespace aul
             m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32,
             m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33 * rhs.m33
             );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            // row 0
+            rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20 + rhs.m03 * m30,
+            rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21 + rhs.m03 * m31,
+            rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22 + rhs.m03 * m32,
+            rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23 + rhs.m03 * m33,
+            // row 1
+            rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20 + rhs.m13 * m30,
+            rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21 + rhs.m13 * m31,
+            rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22 + rhs.m13 * m32,
+            rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23 + rhs.m13 * m33,
+            // row 2
+            rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20 + rhs.m23 * m30,
+            rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21 + rhs.m23 * m31,
+            rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22 + rhs.m23 * m32,
+            rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23 + rhs.m23 * m33,
+            // row 3
+            rhs.m30 * m00 + rhs.m31 * m10 + rhs.m32 * m20 + rhs.m33 * m30,
+            rhs.m30 * m01 + rhs.m31 * m11 + rhs.m32 * m21 + rhs.m33 * m31,
+            rhs.m30 * m02 + rhs.m31 * m12 + rhs.m32 * m22 + rhs.m33 * m32,
+            rhs.m30 * m03 + rhs.m31 * m13 + rhs.m32 * m23 + rhs.m33 * m33
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            // row 0
+            rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20 + rhs.m03 * m30,
+            rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21 + rhs.m03 * m31,
+            rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22 + rhs.m03 * m32,
+            rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23 + rhs.m03 * m33,
+            // row 1
+            rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20 + rhs.m13 * m30,
+            rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21 + rhs.m13 * m31,
+            rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22 + rhs.m13 * m32,
+            rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23 + rhs.m13 * m33,
+            // row 2
+            rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20 + rhs.m23 * m30,
+            rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21 + rhs.m23 * m31,
+            rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22 + rhs.m23 * m32,
+            rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23 + rhs.m23 * m33,
+            // row 3
+            rhs.m30 * m00 + rhs.m31 * m10 + rhs.m32 * m20 + rhs.m33 * m30,
+            rhs.m30 * m01 + rhs.m31 * m11 + rhs.m32 * m21 + rhs.m33 * m31,
+            rhs.m30 * m02 + rhs.m31 * m12 + rhs.m32 * m22 + rhs.m33 * m32,
+            rhs.m30 * m03 + rhs.m31 * m13 + rhs.m32 * m23 + rhs.m33 * m33
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            // row 0
+            m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30,
+            m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31,
+            m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32,
+            m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03 * rhs.m33,
+            // row 1
+            m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30,
+            m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31,
+            m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32,
+            m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13 * rhs.m33,
+            // row 2
+            m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30,
+            m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31,
+            m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32,
+            m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23 * rhs.m33,
+            // row 3
+            m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30,
+            m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31,
+            m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32,
+            m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33 * rhs.m33
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
     }
 
     template<typename T>
@@ -138,6 +217,9 @@ namespace aul
     template<typename T>
     matrix4x4<T>& matrix4x4<T>::operator*=(const matrix4x4<T>& rhs)
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         // row 0
         T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30;
         T t01 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31;
@@ -158,6 +240,76 @@ namespace aul
         T t31 = m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31;
         T t32 = m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32;
         T t33 = m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33 * rhs.m33;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        // row 0
+        T t00 = rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20 + rhs.m03 * m30;
+        T t01 = rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21 + rhs.m03 * m31;
+        T t02 = rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22 + rhs.m03 * m32;
+        T t03 = rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23 + rhs.m03 * m33;
+        // row 1
+        T t10 = rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20 + rhs.m13 * m30;
+        T t11 = rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21 + rhs.m13 * m31;
+        T t12 = rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22 + rhs.m13 * m32;
+        T t13 = rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23 + rhs.m13 * m33;
+        // row 2
+        T t20 = rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20 + rhs.m23 * m30;
+        T t21 = rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21 + rhs.m23 * m31;
+        T t22 = rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22 + rhs.m23 * m32;
+        T t23 = rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23 + rhs.m23 * m33;
+        // row 3
+        T t30 = rhs.m30 * m00 + rhs.m31 * m10 + rhs.m32 * m20 + rhs.m33 * m30;
+        T t31 = rhs.m30 * m01 + rhs.m31 * m11 + rhs.m32 * m21 + rhs.m33 * m31;
+        T t32 = rhs.m30 * m02 + rhs.m31 * m12 + rhs.m32 * m22 + rhs.m33 * m32;
+        T t33 = rhs.m30 * m03 + rhs.m31 * m13 + rhs.m32 * m23 + rhs.m33 * m33;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        // row 0
+        T t00 = rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20 + rhs.m03 * m30;
+        T t01 = rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21 + rhs.m03 * m31;
+        T t02 = rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22 + rhs.m03 * m32;
+        T t03 = rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23 + rhs.m03 * m33;
+        // row 1
+        T t10 = rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20 + rhs.m13 * m30;
+        T t11 = rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21 + rhs.m13 * m31;
+        T t12 = rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22 + rhs.m13 * m32;
+        T t13 = rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23 + rhs.m13 * m33;
+        // row 2
+        T t20 = rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20 + rhs.m23 * m30;
+        T t21 = rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21 + rhs.m23 * m31;
+        T t22 = rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22 + rhs.m23 * m32;
+        T t23 = rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23 + rhs.m23 * m33;
+        // row 3
+        T t30 = rhs.m30 * m00 + rhs.m31 * m10 + rhs.m32 * m20 + rhs.m33 * m30;
+        T t31 = rhs.m30 * m01 + rhs.m31 * m11 + rhs.m32 * m21 + rhs.m33 * m31;
+        T t32 = rhs.m30 * m02 + rhs.m31 * m12 + rhs.m32 * m22 + rhs.m33 * m32;
+        T t33 = rhs.m30 * m03 + rhs.m31 * m13 + rhs.m32 * m23 + rhs.m33 * m33;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        // row 0
+        T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30;
+        T t01 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31;
+        T t02 = m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32;
+        T t03 = m00 * rhs.m03 + m01 * rhs.m13 + m02 * rhs.m23 + m03 * rhs.m33;
+        // row 1
+        T t10 = m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30;
+        T t11 = m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31;
+        T t12 = m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32;
+        T t13 = m10 * rhs.m03 + m11 * rhs.m13 + m12 * rhs.m23 + m13 * rhs.m33;
+        // row 2
+        T t20 = m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30;
+        T t21 = m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31;
+        T t22 = m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32;
+        T t23 = m20 * rhs.m03 + m21 * rhs.m13 + m22 * rhs.m23 + m23 * rhs.m33;
+        // row 3
+        T t30 = m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30;
+        T t31 = m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31;
+        T t32 = m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32;
+        T t33 = m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33 * rhs.m33;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
 
         m00 = t00; m01 = t01; m02 = t02; m03 = t03;
         m10 = t10; m11 = t11; m12 = t12; m13 = t13;
@@ -170,6 +322,8 @@ namespace aul
     template<typename T>
     matrix4x4<T> matrix4x4<T>::operator*(const xform<T>& rhs) const
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return matrix4x4<T>(
             // row 0
@@ -196,6 +350,56 @@ namespace aul
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         return matrix4x4<T>(
             // row 0
+            rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20 + rhs.m03 * m30,
+            rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21 + rhs.m03 * m31,
+            rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22 + rhs.m03 * m32,
+            rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23 + rhs.m03 * m33,
+            // row 1
+            rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20 + rhs.m13 * m30,
+            rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21 + rhs.m13 * m31,
+            rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22 + rhs.m13 * m32,
+            rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23 + rhs.m13 * m33,
+            // row 2
+            rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20 + rhs.m23 * m30,
+            rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21 + rhs.m23 * m31,
+            rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22 + rhs.m23 * m32,
+            rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23 + rhs.m23 * m33,
+            // row 3
+            m30,
+            m31,
+            m32,
+            m33
+            );
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return matrix4x4<T>(
+            // row 0
+            rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20,
+            rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21,
+            rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22,
+            rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23,
+            // row 1
+            rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20,
+            rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21,
+            rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22,
+            rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23,
+            // row 2
+            rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20,
+            rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21,
+            rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22,
+            rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23,
+            // row 3
+            rhs.m30 * m00 + rhs.m31 * m10 + rhs.m32 * m20 + m30,
+            rhs.m30 * m01 + rhs.m31 * m11 + rhs.m32 * m21 + m31,
+            rhs.m30 * m02 + rhs.m31 * m12 + rhs.m32 * m22 + m32,
+            rhs.m30 * m03 + rhs.m31 * m13 + rhs.m32 * m23 + m33
+            );
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return matrix4x4<T>(
+            // row 0
             m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20,
             m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21,
             m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22,
@@ -217,32 +421,87 @@ namespace aul
             m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33
             );
 #endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
     }
 
     template<typename T>
     matrix4x4<T>& matrix4x4<T>::operator*=(const xform<T>& rhs)
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         // row 0
         T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30;
         T t01 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31;
         T t02 = m00 * rhs.m02 + m01 * rhs.m12 + m02 * rhs.m22 + m03 * rhs.m32;
-        T t03 = m03;
         // row 1
         T t10 = m10 * rhs.m00 + m11 * rhs.m10 + m12 * rhs.m20 + m13 * rhs.m30;
         T t11 = m10 * rhs.m01 + m11 * rhs.m11 + m12 * rhs.m21 + m13 * rhs.m31;
         T t12 = m10 * rhs.m02 + m11 * rhs.m12 + m12 * rhs.m22 + m13 * rhs.m32;
-        T t13 = m13;
         // row 2
         T t20 = m20 * rhs.m00 + m21 * rhs.m10 + m22 * rhs.m20 + m23 * rhs.m30;
         T t21 = m20 * rhs.m01 + m21 * rhs.m11 + m22 * rhs.m21 + m23 * rhs.m31;
         T t22 = m20 * rhs.m02 + m21 * rhs.m12 + m22 * rhs.m22 + m23 * rhs.m32;
-        T t23 = m23;
         // row 3
         T t30 = m30 * rhs.m00 + m31 * rhs.m10 + m32 * rhs.m20 + m33 * rhs.m30;
         T t31 = m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21 + m33 * rhs.m31;
         T t32 = m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22 + m33 * rhs.m32;
-        T t33 = m33;
+
+        m00 = t00; m01 = t01; m02 = t02;
+        m10 = t10; m11 = t11; m12 = t12;
+        m20 = t20; m21 = t21; m22 = t22;
+        m30 = t30; m31 = t31; m32 = t32;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        // row 0
+        T t00 = rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20 + rhs.m03 * m30;
+        T t01 = rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21 + rhs.m03 * m31;
+        T t02 = rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22 + rhs.m03 * m32;
+        T t03 = rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23 + rhs.m03 * m33;
+        // row 1
+        T t10 = rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20 + rhs.m13 * m30;
+        T t11 = rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21 + rhs.m13 * m31;
+        T t12 = rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22 + rhs.m13 * m32;
+        T t13 = rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23 + rhs.m13 * m33;
+        // row 2
+        T t20 = rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20 + rhs.m23 * m30;
+        T t21 = rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21 + rhs.m23 * m31;
+        T t22 = rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22 + rhs.m23 * m32;
+        T t23 = rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23 + rhs.m23 * m33;
+
+        m00 = t00; m01 = t01; m02 = t02; m03 = t03;
+        m10 = t10; m11 = t11; m12 = t12; m13 = t13;
+        m20 = t20; m21 = t21; m22 = t22; m23 = t23;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        // row 0
+        T t00 = rhs.m00 * m00 + rhs.m01 * m10 + rhs.m02 * m20;
+        T t01 = rhs.m00 * m01 + rhs.m01 * m11 + rhs.m02 * m21;
+        T t02 = rhs.m00 * m02 + rhs.m01 * m12 + rhs.m02 * m22;
+        T t03 = rhs.m00 * m03 + rhs.m01 * m13 + rhs.m02 * m23;
+        // row 1
+        T t10 = rhs.m10 * m00 + rhs.m11 * m10 + rhs.m12 * m20;
+        T t11 = rhs.m10 * m01 + rhs.m11 * m11 + rhs.m12 * m21;
+        T t12 = rhs.m10 * m02 + rhs.m11 * m12 + rhs.m12 * m22;
+        T t13 = rhs.m10 * m03 + rhs.m11 * m13 + rhs.m12 * m23;
+        // row 2
+        T t20 = rhs.m20 * m00 + rhs.m21 * m10 + rhs.m22 * m20;
+        T t21 = rhs.m20 * m01 + rhs.m21 * m11 + rhs.m22 * m21;
+        T t22 = rhs.m20 * m02 + rhs.m21 * m12 + rhs.m22 * m22;
+        T t23 = rhs.m20 * m03 + rhs.m21 * m13 + rhs.m22 * m23;
+        // row 3
+        T t30 = rhs.m30 * m00 + rhs.m31 * m10 + rhs.m32 * m20 + m30;
+        T t31 = rhs.m30 * m01 + rhs.m31 * m11 + rhs.m32 * m21 + m31;
+        T t32 = rhs.m30 * m02 + rhs.m31 * m12 + rhs.m32 * m22 + m32;
+        T t33 = rhs.m30 * m03 + rhs.m31 * m13 + rhs.m32 * m23 + m33;
+
+        m00 = t00; m01 = t01; m02 = t02; m03 = t03;
+        m10 = t10; m11 = t11; m12 = t12; m13 = t13;
+        m20 = t20; m21 = t21; m22 = t22; m23 = t23;
+        m30 = t30; m31 = t31; m32 = t32; m33 = t33;
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         // row 0
         T t00 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20;
@@ -264,12 +523,14 @@ namespace aul
         T t31 = m30 * rhs.m01 + m31 * rhs.m11 + m32 * rhs.m21;
         T t32 = m30 * rhs.m02 + m31 * rhs.m12 + m32 * rhs.m22;
         T t33 = m30 * rhs.m03 + m31 * rhs.m13 + m32 * rhs.m23 + m33;
-#endif // AUL_USE_COORDINATE_HANDEDNESS
 
         m00 = t00; m01 = t01; m02 = t02; m03 = t03;
         m10 = t10; m11 = t11; m12 = t12; m13 = t13;
         m20 = t20; m21 = t21; m22 = t22; m23 = t23;
         m30 = t30; m31 = t31; m32 = t32; m33 = t33;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
 
         return *this;
     }
@@ -572,26 +833,54 @@ namespace aul
     template<typename T>
     matrix4x4<T> matrix4x4<T>::make_rotation_xyz(T radians_x, T radians_y, T radians_z)
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return make_rotation_x(radians_x) * make_rotation_y(radians_y) * make_rotation_z(radians_z);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return make_rotation_z(radians_z) * make_rotation_y(radians_y) * make_rotation_x(radians_x);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
     }
 
     template<typename T>
     matrix4x4<T> matrix4x4<T>::make_rotation_xyz(const vector3<T>& radians_xyz)
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return make_rotation_x(radians_xyz.x) * make_rotation_y(radians_xyz.y) * make_rotation_z(radians_xyz.z);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return make_rotation_z(radians_xyz.z) * make_rotation_y(radians_xyz.y) * make_rotation_x(radians_xyz.x);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
     }
 
     template<typename T>
     matrix4x4<T> matrix4x4<T>::make_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return make_rotation_y(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_z(radians_roll);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return make_rotation_z(radians_roll * make_rotation_x(radians_pitch) * make_rotation_y(radians_yaw);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #elif AUL_USE_UP_VECTOR == AUL_Z_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return make_rotation_z(radians_yaw) * make_rotation_y(radians_pitch) * make_rotation_x(radians_roll);
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         return make_rotation_z(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_y(radians_roll);
 #endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return make_rotation_x(radians_roll) * make_rotation_y(radians_pitch) * make_rotation_z(radians_yaw);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return make_rotation_y(radians_roll) * make_rotation_x(radians_pitch) * make_rotation_z(radians_yaw);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #endif // AUL_USE_UP_VECTOR
     }
 
@@ -599,13 +888,33 @@ namespace aul
     matrix4x4<T> matrix4x4<T>::make_rotation_ypr(const vector3<T>& radians_ypr)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return make_rotation_y(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.roll);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return make_rotation_z(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_y(radians_ypr.roll);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #elif AUL_USE_UP_VECTOR == AUL_Z_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return make_rotation_z(radians_ypr.yaw) * make_rotation_y(radians_ypr.pitch) * make_rotation_x(radians_ypr.roll);
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         return make_rotation_z(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_y(radians_ypr.roll);
 #endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return make_rotation_x(radians_ypr.roll) * make_rotation_y(radians_ypr.pitch) * make_rotation_z(radians_ypr.yaw);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return make_rotation_y(radians_ypr.roll) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.yaw);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #endif // AUL_USE_UP_VECTOR
     }
 
@@ -727,9 +1036,9 @@ namespace aul
     template<typename T>
     matrix4x4<T>& matrix4x4<T>::to_translation(T x_, T y_, T z_)
     {
-        x = vector3<T>::X_AXIS;
-        y = vector3<T>::Y_AXIS;
-        z = vector3<T>::Z_AXIS;
+        x = vector4<T>::X_AXIS;
+        y = vector4<T>::Y_AXIS;
+        z = vector4<T>::Z_AXIS;
         w.x = x_;
         w.y = y_;
         w.z = z_;
@@ -740,9 +1049,9 @@ namespace aul
     template<typename T>
     matrix4x4<T>& matrix4x4<T>::to_translation(const vector3<T>& translation)
     {
-        x = vector3<T>::X_AXIS;
-        y = vector3<T>::Y_AXIS;
-        z = vector3<T>::Z_AXIS;
+        x = vector4<T>::X_AXIS;
+        y = vector4<T>::Y_AXIS;
+        z = vector4<T>::Z_AXIS;
         w.xyz = translation;
         w.w = scalar<T>::ONE;
         return *this;
@@ -837,26 +1146,54 @@ namespace aul
     template<typename T>
     matrix4x4<T>& matrix4x4<T>::to_rotation_xyz(T radians_x, T radians_y, T radians_z)
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return *this = make_rotation_x(radians_x) * make_rotation_y(radians_y) * make_rotation_z(radians_z);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return *this = make_rotation_z(radians_z) * make_rotation_y(radians_y) * make_rotation_x(radians_x);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
     }
 
     template<typename T>
     matrix4x4<T>& matrix4x4<T>::to_rotation_xyz(const vector3<T>& radians_xyz)
     {
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return *this = make_rotation_x(radians_xyz.x) * make_rotation_y(radians_xyz.y) * make_rotation_z(radians_xyz.z);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return *this = make_rotation_z(radians_xyz.z) * make_rotation_y(radians_xyz.y) * make_rotation_x(radians_xyz.x);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
     }
 
     template<typename T>
     matrix4x4<T>& matrix4x4<T>::to_rotation_ypr(T radians_yaw, T radians_pitch, T radians_roll)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return *this = make_rotation_y(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_z(radians_roll);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return *this = make_rotation_z(radians_roll) * make_rotation_x(radians_pitch) * make_rotation_y(radians_yaw);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #elif AUL_USE_UP_VECTOR == AUL_Z_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return *this = make_rotation_z(radians_yaw) * make_rotation_y(radians_pitch) * make_rotation_x(radians_roll);
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         return *this = make_rotation_z(radians_yaw) * make_rotation_x(radians_pitch) * make_rotation_y(radians_roll);
 #endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return *this = make_rotation_x(radians_roll) * make_rotation_y(radians_pitch) * make_rotation_z(radians_yaw);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return *this = make_rotation_y(radians_roll) * make_rotation_x(radians_pitch) * make_rotation_z(radians_yaw);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #endif // AUL_USE_UP_VECTOR
     }
 
@@ -864,13 +1201,33 @@ namespace aul
     matrix4x4<T>& matrix4x4<T>::to_rotation_ypr(vector3<T>& radians_ypr)
     {
 #if AUL_USE_UP_VECTOR == AUL_Y_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         return *this = make_rotation_y(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.roll);
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        return *this = make_rotation_z(radians_ypr.roll) * make_rotation_x(radians_ypr.pitch) * make_rotation_y(radians_ypr.yaw);
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #elif AUL_USE_UP_VECTOR == AUL_Z_UP
+
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
+
 #if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
         return *this = make_rotation_z(radians_ypr.yaw) * make_rotation_y(radians_ypr.pitch) * make_rotation_x(radians_ypr.roll);
 #elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
         return *this = make_rotation_z(radians_ypr.yaw) * make_rotation_x(radians_ypr.pitch) * make_rotation_y(radians_ypr.roll);
 #endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        return *this = make_rotation_x(radians_ypr.roll) * make_rotation_y(radians_ypr.pitch) * make_rotation_z(radians_ypr.yaw);
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        return *this = make_rotation_y(radians_ypr.roll) * make_rotation_x(radians_ypr.pitch) * make_rotation_z(radians_ypr.yaw);
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
+
 #endif // AUL_USE_UP_VECTOR
     }
 

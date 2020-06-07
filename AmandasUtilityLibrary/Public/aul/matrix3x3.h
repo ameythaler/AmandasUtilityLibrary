@@ -166,6 +166,7 @@ namespace aul
         matrix3x3& to_reflection(const vector3<T>& normal);
         matrix3x3& to_involution(const vector3<T>& vec);
 
+#if AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_LEFT_HANDED
         inline matrix3x3& scale_uniformly(T scale) { return *this *= make_uniform_scale(scale); }
         inline matrix3x3& scale(T scale_x, T scale_y, T scale_z) { return *this *= make_scale(scale_x, scale_y, scale_z); }
         inline matrix3x3& scale(const vector3<T>& scale) { return *this *= make_scale(scale); }
@@ -181,6 +182,23 @@ namespace aul
         inline matrix3x3& rotate_angle_axis(T radians, const vector3<T>& axis) { return *this *= make_rotation_angle_axis(radians, axis); }
         inline matrix3x3& rotate_axis_angle(const vector3<T>& axis, T radians) { return *this *= make_rotation_angle_axis(radians, axis); }
         inline matrix3x3& reflect(const vector3<T>& normal) { return *this *= make_reflection(normal); }
+#elif AUL_USE_MATRIX_MULTIPLICATION_ORDER == AUL_RIGHT_HANDED
+        inline matrix3x3& scale_uniformly(T scale) { return *this = make_uniform_scale(scale) * *this; }
+        inline matrix3x3& scale(T scale_x, T scale_y, T scale_z) { return *this = make_scale(scale_x, scale_y, scale_z) * *this; }
+        inline matrix3x3& scale(const vector3<T>& scale) { return *this = make_scale(scale) * *this; }
+        inline matrix3x3& scale(T scale, const vector3<T>& axis) { return *this = make_scale(scale, axis) * *this; }
+        inline matrix3x3& skew(T radians, const vector3<T>& skew_axis, const vector3<T>& normal_axis) { return *this = make_skew(radians, skew_axis, normal_axis) * *this; }
+        inline matrix3x3& rotate_x(T radians) { return *this = make_rotation_x(radians) * *this; }
+        inline matrix3x3& rotate_y(T radians) { return *this = make_rotation_y(radians) * *this; }
+        inline matrix3x3& rotate_z(T radians) { return *this = make_rotation_z(radians) * *this; }
+        inline matrix3x3& rotate_xyz(T radians_x, T radians_y, T radians_z) { return *this = make_rotation_xyz(radians_x, radians_y, radians_z) * *this; }
+        inline matrix3x3& rotate_xyz(const vector3<T>& radians_xyz) { return *this = make_rotation_xyz(radians_xyz) * *this; }
+        inline matrix3x3& rotate_ypr(T radians_yaw, T radians_pitch, T radians_roll) { return *this = make_rotation_ypr(radians_yaw, radians_pitch, radians_roll) * *this; }
+        inline matrix3x3& rotate_ypr(const vector3<T>& radians_ypr) { return *this = make_rotation_ypr(radians_ypr) * *this; }
+        inline matrix3x3& rotate_angle_axis(T radians, const vector3<T>& axis) { return *this = make_rotation_angle_axis(radians, axis) * *this; }
+        inline matrix3x3& rotate_axis_angle(const vector3<T>& axis, T radians) { return *this = make_rotation_angle_axis(radians, axis) * *this; }
+        inline matrix3x3& reflect(const vector3<T>& normal) { return *this = make_reflection(normal) * *this; }
+#endif // AUL_USE_MATRIX_MULTIPLICATION_ORDER
 
         operator wide_string() const;
         friend wide_ostream& operator<< <> (wide_ostream& out, const matrix3x3<T>& mat);
