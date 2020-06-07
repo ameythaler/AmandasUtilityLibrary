@@ -2,6 +2,8 @@
 #include <aul/vector4.h>
 #include <aul/vector3.h>
 #include <aul/vector2.h>
+#include <aul/matrix4x4.h>
+#include <aul/xform.h>
 
 namespace aul
 {
@@ -101,6 +103,47 @@ namespace aul
         memcpy(data, rhs.data, sizeof(T) * 2);
         z = scalar<T>::ZERO;
         w = scalar<T>::ZERO;
+        return *this;
+    }
+
+    template<typename T>
+    vector4<T>& vector4<T>::operator *=(const matrix4x4<T>& rhs)
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        T tx = rhs.m00 * x + rhs.m10 * y + rhs.m20 * z + rhs.m30 * w;
+        T ty = rhs.m01 * x + rhs.m11 * y + rhs.m21 * z + rhs.m31 * w;
+        T tz = rhs.m02 * x + rhs.m12 * y + rhs.m22 * z + rhs.m32 * w;
+        T tw = rhs.m03 * x + rhs.m13 * y + rhs.m23 * z + rhs.m33 * w;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        T tx = rhs.m00 * x + rhs.m01 * y + rhs.m02 * z + rhs.m03 * w;
+        T ty = rhs.m10 * x + rhs.m11 * y + rhs.m12 * z + rhs.m13 * w;
+        T tz = rhs.m20 * x + rhs.m21 * y + rhs.m22 * z + rhs.m23 * w;
+        T tw = rhs.m30 * x + rhs.m31 * y + rhs.m32 * z + rhs.m33 * w;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        x = tx;
+        y = ty;
+        z = tz;
+        w = tw;
+        return *this;
+    }
+
+    template<typename T>
+    vector4<T>& vector4<T>::operator *=(const xform<T>& rhs)
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        T tx = rhs.m00 * x + rhs.m10 * y + rhs.m20 * z + rhs.m30 * w;
+        T ty = rhs.m01 * x + rhs.m11 * y + rhs.m21 * z + rhs.m31 * w;
+        T tz = rhs.m02 * x + rhs.m12 * y + rhs.m22 * z + rhs.m32 * w;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        T tx = rhs.m00 * x + rhs.m01 * y + rhs.m02 * z + rhs.m03 * w;
+        T ty = rhs.m10 * x + rhs.m11 * y + rhs.m12 * z + rhs.m13 * w;
+        T tz = rhs.m20 * x + rhs.m21 * y + rhs.m22 * z + rhs.m23 * w;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        x = tx;
+        y = ty;
+        z = tz;
         return *this;
     }
 

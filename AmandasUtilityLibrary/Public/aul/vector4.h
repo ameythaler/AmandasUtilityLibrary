@@ -16,6 +16,8 @@ namespace aul
 {
     template<typename T> struct vector4;
     template<typename T, typename U> struct vector4_int;
+    template<typename T> struct matrix4x4;
+    template<typename T> struct xform;
 
     template<typename T>
     wide_ostream& operator<< (wide_ostream& out, const vector4<T>& vec);
@@ -99,6 +101,8 @@ namespace aul
         inline vector4& operator/=(T rhs) { x /= rhs; y /= rhs; z /= rhs; w /= rhs; return *this; }
         inline vector4& operator*=(const vector4& rhs) { x *= rhs.x; y *= rhs.y; z *= rhs.z; w *= rhs.w; return *this; }
         inline vector4& operator/=(const vector4& rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; z /= rhs.z; return *this; }
+        vector4& operator*=(const matrix4x4<T>& rhs);
+        vector4& operator*=(const xform<T>& rhs);
 
         inline T length() const { return sqrt(x * x + y * y + z * z + w * w); }
         inline T length_sq() const { return x * x + y * y + z * z + w * w; }

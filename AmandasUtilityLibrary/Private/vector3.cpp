@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <aul/vector3.h>
+#include <aul/matrix3x3.h>
 
 namespace aul
 {
@@ -78,6 +79,25 @@ namespace aul
     {
         memcpy(data, rhs.data, 2);
         z = scalar<T>::ZERO;
+        return *this;
+    }
+
+    template<typename T>
+    vector3<T>& vector3<T>::operator *=(const matrix3x3<T>& rhs)
+    {
+#if AUL_USE_COORDINATE_HANDEDNESS == AUL_LEFT_HANDED
+        T tx = rhs.m00 * x + rhs.m10 * y + rhs.m20 * z;
+        T ty = rhs.m01 * x + rhs.m11 * y + rhs.m21 * z;
+        T tz = rhs.m02 * x + rhs.m12 * y + rhs.m22 * z;
+#elif AUL_USE_COORDINATE_HANDEDNESS == AUL_RIGHT_HANDED
+        T tx = rhs.m00 * x + rhs.m01 * y + rhs.m02 * z;
+        T ty = rhs.m10 * x + rhs.m11 * y + rhs.m12 * z;
+        T tz = rhs.m20 * x + rhs.m21 * y + rhs.m22 * z;
+#endif // AUL_USE_COORDINATE_HANDEDNESS
+
+        x = tx;
+        y = ty;
+        z = tz;
         return *this;
     }
 

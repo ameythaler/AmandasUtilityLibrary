@@ -15,6 +15,7 @@ namespace aul
 {
     template<typename T> struct vector3;
     template<typename T, typename U> struct vector3_int;
+    template<typename T> struct matrix3x3;
 
     template<typename T>
     wide_ostream& operator<< (wide_ostream& out, const vector3<T>& vec);
@@ -97,6 +98,7 @@ namespace aul
         inline vector3& operator/=(T rhs) { x /= rhs; y /= rhs; z /= rhs; return *this; }
         inline vector3& operator*=(const vector3& rhs) { x *= rhs.x; y *= rhs.y; z *= rhs.z; return *this; }
         inline vector3& operator/=(const vector3& rhs) { x /= rhs.x; y /= rhs.y; z /= rhs.z; return *this; }
+        vector3& operator*=(const matrix3x3<T>& rhs);
 
         inline T length() const { return sqrt(x * x + y * y + z * z); }
         inline T length_sq() const { return x * x + y * y + z * z; }
